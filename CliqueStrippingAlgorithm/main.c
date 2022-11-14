@@ -12,7 +12,7 @@ int adj_matrix[N][N];
 int u_[N];
 int v_[N];
 int num_edges = 0;
-
+/*
 
 struct Node {
 	int data;
@@ -56,7 +56,63 @@ void inOrder(struct Node* root) {
 	}
 
 }
+*/
 
+struct node {
+	int vertex;
+	struct node* next;
+};
+
+struct node* createNode(int);
+
+struct Graph {
+	int numVertices;
+	struct node** adjList;
+};
+
+//create node function
+struct node* createNode(int v) {
+	struct node* newNode = malloc(sizeof(struct node));
+	newNode->vertex = v;
+	newNode->next = NULL;
+	return newNode;
+}
+
+//create a graph
+struct Graph* createGraph() {
+	struct Graph* graph = malloc(sizeof(struct Graph));
+	graph->numVertices = N;
+	graph->adjList = malloc(N * sizeof(struct node*));
+	int i;
+	for (i = 1; i < N + 1; i++)
+		graph->adjList[i] = NULL;
+		
+	return graph;
+}
+
+void addEdge(struct Graph* graph, int s, int d) {
+	// Add edge from s to d
+	struct node* newNode = createNode(d);
+	newNode->next = graph->adjList[s];
+	graph->adjList[s] = newNode;
+
+	
+}
+
+// Print the graph
+void printGraph(struct Graph* graph) {
+	int v;
+	for (v = 1; v < graph->numVertices + 1; v++) {
+		struct node* temp = graph->adjList[v];
+		printf("Vertex u[%d]: ", v);
+		while (temp) {
+			printf("%d", temp->vertex);
+			temp = temp->next;
+			printf("->");
+		}
+		printf("\n");
+	}
+}
 
 void load_adj_matrix() {
 	FILE* fpointer = fopen("Bipartite-graph.csv", "r");
@@ -64,10 +120,10 @@ void load_adj_matrix() {
 	if (!fpointer)
 		printf("Cann't open the file\n");
 	else {
-		int row = 0;
-		int col = 0;
+		int row = 1;
+		int col = 1;
 		while (fgets(line, MAXCHAR, fpointer)) {
-			col = 0;
+			col = 1;
 			//strtok break down each line into smaller string
 			char* value = strtok(line, ",");
 			while (value != NULL) {
@@ -82,8 +138,8 @@ void load_adj_matrix() {
 		fclose(fpointer);
 	}
 
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
+	for (int i = 1; i < N + 1; i++) {
+		for (int j = 1; j < N + 1; j++) {
 			printf(" %d ", adj_matrix[i][j]);
 		}
 		printf("\n");
@@ -92,8 +148,8 @@ void load_adj_matrix() {
 }
 void get_edges() {
 	
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
+	for (int i = 1; i < N + 1; i++) {
+		for (int j = 1; j < N + 1; j++) {
 			num_edges = num_edges + adj_matrix[i][j];
 		}
 	}
@@ -101,28 +157,17 @@ void get_edges() {
 
 }
 
-void left_part_u() {
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
-			u_[i] = adj_matrix[i][j];
-		}
-	}
-
-	for (int i = 0; i < N; i++) {
-		printf("%d", u_[i]);
-	}
-	printf("\n");
-
-}
-
-bool isEdges() {
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
-			if (adj_matrix[i][j] == 1) {
+int hadEdge(int u, int v) {
+	for (u = 0; u < N; u++) {
+		for (v = 0; v < N; v++) {
+			if (adj_matrix[u][v] == 1) {
+				printf("There is an edge between u[%d] and v[%d]", u, v);
 				return true;
 			}
-			else
+			else {
+				printf("there is no edge between u[%d] and v[%d]", u, v);
 				return false;
+			}
 		}
 	}
 
@@ -171,27 +216,36 @@ int* convertStringToInteger(char* c)
 int main() {
 	
 	int n = 17;
+	struct Graph* graph = createGraph(N);
+	
 	printf("decimal 17 to binary: ");
 	decToBinary(n);
 	printf("\n");
-	
+		
 	printf("load adjacency matrix:\n");
 	load_adj_matrix();
-	
+	for (int i = 0; i < N + 1; i++) {
+		for (int j = 0; j < N + 1; j++) {
+			if (adj_matrix[i][j] == 1) {
+				addEdge(graph, i, j);
+			}
+
+		}
+	}
+	printGraph(graph);
+
 	printf("get edges:\n");
 	get_edges();
 	printf("\n");
 
 	printf("is edge?\n");
-	isEdges();
 	printf("\n");
-	printf("Part U:\n");
-	left_part_u();
+	
 
 
 	//printf("converted array:\n");
 	//convertStringToInteger(fpointer);
 	return 0;
 }
-
+ 
 
