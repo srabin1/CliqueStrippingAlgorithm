@@ -114,6 +114,18 @@ void printGraph(struct Graph* graph) {
 	}
 }
 
+void nodeDegree() {
+	
+	for (int i = 1; i < N + 1; i++) {
+		int degree = 0;
+		for (int j = 1; j < N + 1; j++) {
+			degree = degree + adj_matrix[i][j];		
+		}
+		printf("degree of u[%d] is: %d\n", i, degree);
+		//break;		
+	}
+}
+
 void load_adj_matrix() {
 	FILE* fpointer = fopen("Bipartite-graph.csv", "r");
 	char line[MAXCHAR];
@@ -155,7 +167,10 @@ void get_edges() {
 	}
 	printf("%d", num_edges);
 
-}
+} 
+
+
+
 
 int hadEdge(int u, int v) {
 	for (u = 0; u < N; u++) {
@@ -232,11 +247,15 @@ int main() {
 
 		}
 	}
+	printf("load adjacency list:\n");
 	printGraph(graph);
-
+	
 	printf("get edges:\n");
 	get_edges();
 	printf("\n");
+
+	printf("get degree:\n");
+	nodeDegree();
 
 	printf("is edge?\n");
 	printf("\n");
