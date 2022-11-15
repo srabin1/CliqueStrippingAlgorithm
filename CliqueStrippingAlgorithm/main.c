@@ -4,6 +4,7 @@
 #include <conio.h>
 #include <string.h>
 #include<stdbool.h>
+#include<math.h>
 #define MAXCHAR 100000
 #define N 8
 
@@ -12,7 +13,18 @@ int adj_matrix[N][N];
 int u_[N];
 int v_[N];
 int num_edges = 0;
-/*
+int degree;
+int height;
+
+
+
+int logFunction() {
+	height = log2(N);
+	printf("log2 of 8 is: %d", height);
+	return height;
+	
+}
+
 
 struct Node {
 	int data;
@@ -28,14 +40,37 @@ struct Node* newNode(int data) {
 }
 
 
-void display(struct Node* root) {
+void displayPostOrder(struct Node* Node) {
 
-	if (root != NULL) {
-		display(root->left);
-		printf("%d\n", root->data);
-		display(root->right);
+	if (Node == NULL) {
+		return;
+	}
+	if (Node != NULL) {
+		displayPostOrder(Node->left);
+		displayPostOrder(Node->right);
+		printf("%d\n", Node->data);
+		
 	}
 }
+
+void recursiveCall(struct Node* root) {
+	for (int i = 1; i < N + 1; i++) {
+		root = newNode(i);
+		for (int j = 1; j < N + 1; j++) {
+			if (height > 0 && height <= 2) {
+				if (adj_matrix[i][j] == 1 && j <= N / 2) {
+					root->left = newNode(2 * i);
+				}
+				else if (adj_matrix[i][j] == 1 && j > N / 2) {
+					root->right = newNode(2*i + 1);
+				}
+			}
+			 
+		}
+	}
+}
+
+
 
 struct Node* insertLevelOrder(int arr[], int i, int n) {
 	struct Node* root = NULL;
@@ -56,8 +91,71 @@ void inOrder(struct Node* root) {
 	}
 
 }
-*/
 
+
+
+void load_adj_matrix() {
+	FILE* fpointer = fopen("Bipartite-graph.csv", "r");
+	char line[MAXCHAR];
+	if (!fpointer)
+		printf("Cann't open the file\n");
+	else {
+		int row = 1;
+		int col = 1;
+		while (fgets(line, MAXCHAR, fpointer)) {
+			col = 1;
+			//strtok break down each line into smaller string
+			char* value = strtok(line, ",");
+			while (value != NULL) {
+				adj_matrix[row][col] = atoi(value);
+				value = strtok(NULL, ",");
+				col++;
+			}
+			row++;
+
+		}
+		//printf("\n");
+		fclose(fpointer);
+	}
+
+	for (int i = 1; i < N + 1; i++) {
+		for (int j = 1; j < N + 1; j++) {
+			printf(" %d ", adj_matrix[i][j]);
+		}
+		printf("\n");
+	}
+
+}
+void get_edges() {
+
+	for (int i = 1; i < N + 1; i++) {
+		for (int j = 1; j < N + 1; j++) {
+			num_edges = num_edges + adj_matrix[i][j];
+		}
+	}
+	printf("%d", num_edges);
+
+}
+
+
+
+
+int hadEdge(int u, int v) {
+	for (u = 0; u < N; u++) {
+		for (v = 0; v < N; v++) {
+			if (adj_matrix[u][v] == 1) {
+				printf("There is an edge between u[%d] and v[%d]", u, v);
+				return true;
+			}
+			else {
+				printf("there is no edge between u[%d] and v[%d]", u, v);
+				return false;
+			}
+		}
+	}
+
+
+}
 struct node {
 	int vertex;
 	struct node* next;
@@ -117,77 +215,16 @@ void printGraph(struct Graph* graph) {
 void nodeDegree() {
 	
 	for (int i = 1; i < N + 1; i++) {
-		int degree = 0;
+		degree = 0;
 		for (int j = 1; j < N + 1; j++) {
 			degree = degree + adj_matrix[i][j];		
 		}
 		printf("degree of u[%d] is: %d\n", i, degree);
-		//break;		
+				
 	}
 }
 
-void load_adj_matrix() {
-	FILE* fpointer = fopen("Bipartite-graph.csv", "r");
-	char line[MAXCHAR];
-	if (!fpointer)
-		printf("Cann't open the file\n");
-	else {
-		int row = 1;
-		int col = 1;
-		while (fgets(line, MAXCHAR, fpointer)) {
-			col = 1;
-			//strtok break down each line into smaller string
-			char* value = strtok(line, ",");
-			while (value != NULL) {
-				adj_matrix[row][col] = atoi(value);
-				value = strtok(NULL, ",");
-				col++;
-			}
-			row++;
-			
-		}
-		//printf("\n");
-		fclose(fpointer);
-	}
 
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < N + 1; j++) {
-			printf(" %d ", adj_matrix[i][j]);
-		}
-		printf("\n");
-	}
-
-}
-void get_edges() {
-	
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < N + 1; j++) {
-			num_edges = num_edges + adj_matrix[i][j];
-		}
-	}
-	printf("%d", num_edges);
-
-} 
-
-
-
-
-int hadEdge(int u, int v) {
-	for (u = 0; u < N; u++) {
-		for (v = 0; v < N; v++) {
-			if (adj_matrix[u][v] == 1) {
-				printf("There is an edge between u[%d] and v[%d]", u, v);
-				return true;
-			}
-			else {
-				printf("there is no edge between u[%d] and v[%d]", u, v);
-				return false;
-			}
-		}
-	}
-
-	
-}
 
 
 
@@ -260,6 +297,7 @@ int main() {
 	printf("is edge?\n");
 	printf("\n");
 	
+	logFunction();
 
 
 	//printf("converted array:\n");
