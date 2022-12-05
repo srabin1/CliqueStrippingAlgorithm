@@ -142,61 +142,81 @@ void addEdge(struct Graph* graph, int s, int d) {
 }
 
 
-
-
-
+/****************************************************************/
 
 struct Node {
 	int data;
 	struct Node* left;
 	struct Node* right;
-};
+}*root =NULL, *top= NULL;
 
 struct Node* newNode(int data) {
-	struct Node* node = (struct Node*)malloc(sizeof(struct Node));
-	node->data = data;
-	node->left = node->right = NULL;
-	return node;
+	struct Node* t = (struct Node*)malloc(sizeof(struct Node));
+	t->data = data;
+	t->left = t->right = NULL;
+	return t;
 }
 
+struct Node *insert(struct Node *p, int key) {
+	
+	if (p == NULL) {
+		return newNode(key);
+	}
+	
+	if (key < p->data) {
+		p->left = insert(p->left, key);
+	}
+	else if (key > p->data) {
+		p->right = insert(p->right, key);
+	}
+	return p;
+}
 
-void displayPostOrder(struct Node* Node) {
+struct node* insertNeighborhood(struct Node* p, int n) {
+	while(n>1) { 
+		if (p == NULL) {
+			return newNode(n);
 
+		}
+		for (int i = 1; i < N + 1; i++) {
+			for (int j = 1; j < n + 1; j++) {
+				if (adj_matrix[i][j] == 1 && j < (n / 2) + 1 && p->left == NULL) {
+					p->left = insertNeighborhood(p->left, (n / 2));
+				}
+				else if (adj_matrix[i][j] == 1 && j > (n / 2) + 1 && p->right == NULL) {
+					p->right = insertNeighborhood(p->right, n / 2);
+				}
+			}
+		}
+	}
+
+}
+
+//post-order binary representation
+void postOrder(struct Node* Node) {
 	if (Node == NULL) {
 		return;
 	}
 	if (Node != NULL) {
-		displayPostOrder(Node->left);
-		displayPostOrder(Node->right);
+		postOrder(Node->left);
+		postOrder(Node->right);
 		printf("%d\n", Node->data);
 
 	}
 }
 
 
-struct Node* insertLevelOrder(int arr[], int i, int n) {
-	struct Node* root = NULL;
-	if (i < n) {
-		root = newNode(arr[i]);
-		root->left = insertLevelOrder(arr, 2 * i + 1, n);
-		root->right = insertLevelOrder(arr, 2 * i + 2, n);
-
+//in-order binary representation
+void inOrder(struct Node* Node) {
+	if (Node == NULL) {
+		return;
 	}
-	return root;
-}
-
-void inOrder(struct Node* root) {
-	if (root != NULL) {
-		inOrder(root->left);
-		printf("%d", root->data);
-		inOrder(root->right);
+	if (Node != NULL) {
+		inOrder(Node->left);
+		printf("%d\n", Node->data);
+		inOrder(Node->right);
 	}
-
 }
-
-
-
-
 
 
 int main() {
@@ -225,8 +245,21 @@ int main() {
 	nodeDegree();
 
 	logFunction();
+	printf("\n");
 
+	root = insert(root, 50);
+	insert(root, 30);
+	insert(root, 20);
+	insert(root, 40);
+	insert(root, 70);
+	insert(root, 60);
+	insert(root, 80);
+	printf("print inorder list: \n");
+	inOrder(root);
+	
 
+	
+	
 	return 0;
 }
  
@@ -292,7 +325,16 @@ void decToBinary(int n)
 		printf("%d", binaryNum[j]);
 }
 
+struct Node* insertLevelOrder(int arr[], int i, int n) {
+	struct Node* root = NULL;
+	if (i < n) {
+		root = newNode(arr[i]);
+		root->left = insertLevelOrder(arr, 2 * i + 1, n);
+		root->right = insertLevelOrder(arr, 2 * i + 2, n);
 
+	}
+	return root;
+}
 
 //main block
 
