@@ -180,15 +180,17 @@ struct node* insertNeighborhood(struct Node* p, int n) {
 		}
 		for (int i = 1; i < N + 1; i++) {
 			for (int j = 1; j < n + 1; j++) {
-				if (adj_matrix[i][j] == 1 && j < (n / 2) + 1 && p->left == NULL) {
+				if (adj_matrix[i][j] == 1 && j < (n / 2) + 1) {
 					p->left = insertNeighborhood(p->left, (n / 2));
 				}
-				else if (adj_matrix[i][j] == 1 && j > (n / 2) + 1 && p->right == NULL) {
+				else if (adj_matrix[i][j] == 1 && j > (n / 2) + 1) {
 					p->right = insertNeighborhood(p->right, n / 2);
 				}
+				return p;
 			}
 		}
 	}
+	
 
 }
 
@@ -226,8 +228,8 @@ int main() {
 			
 	printf("load adjacency matrix:\n");
 	load_adj_matrix();
-	for (int i = 0; i < N + 1; i++) {
-		for (int j = 0; j < N + 1; j++) {
+	for (int i = 1; i < N + 1; i++) {
+		for (int j = 1; j < N + 1; j++) {
 			if (adj_matrix[i][j] == 1) {
 				addEdge(graph, i, j);
 			}
@@ -246,7 +248,7 @@ int main() {
 
 	logFunction();
 	printf("\n");
-
+		
 	root = insert(root, 50);
 	insert(root, 30);
 	insert(root, 20);
@@ -254,8 +256,21 @@ int main() {
 	insert(root, 70);
 	insert(root, 60);
 	insert(root, 80);
-	printf("print inorder list: \n");
+	printf("print inorder list for binary tree: \n");
 	inOrder(root);
+	printf("\n");
+
+	printf("print inorder list for neighborhood tree: \n");
+	int n = 8;
+	top = insertNeighborhood(top, n);
+	insertNeighborhood(top, 4);
+	//insertNeighborhood(top, 2);
+	inOrder(top);
+
+	for (int i = N+1; i > 1; i = i / 2) {
+		insertNeighborhood(top, i);
+	}
+	
 	
 
 	
