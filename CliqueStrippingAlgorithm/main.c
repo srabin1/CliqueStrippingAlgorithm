@@ -213,7 +213,7 @@ struct Node *insert(struct Node *root, int data) {
 
 	else if (root->rcount < root->lcount) {
 
-		if (isPBT(root->lcount)) {
+		if (isBinaryTreePerfect(root->lcount)) {
 			root->right = insert(root->right, data);
 			root->rcount += 1;
 		}
@@ -251,6 +251,7 @@ void inOrder(struct Node* Node) {
 		printf("%d\n", Node->data);
 		inOrder(Node->right);
 	}
+	
 }
 
 
@@ -292,7 +293,10 @@ int main() {
 		}
 		printf("\n");
 	}
+	
 	inOrder(root);
+	
+
 
 	
 	
