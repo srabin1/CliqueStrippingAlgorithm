@@ -10,6 +10,7 @@
 
 
 int adj_matrix[N][N];
+int matrix[(2 * N) - 1][(2 * N) - 1];
 int u_[N];
 int v_[N];
 int num_edges = 0;
@@ -141,7 +142,33 @@ void addEdge(struct Graph* graph, int s, int d) {
 	graph->adjList[s] = newNode;
 }
 
+/*************************************************************/
+void createMatrix() {
+	for (int i = 1; i < N+1; i++) {
+		for (int j = (2*N)-1 ; j > 0; j--) {
+			if (j < N+1) {
+				matrix[i][j+ (N-1)] = adj_matrix[i][j];
+				
+			}
+			
+			
+		}
+	}
+	for (int i = 1; i < N + 1; i++) {
+		for (int j = N-1; j > 0; j--) {
+			matrix[i][j] = matrix[i][2 * j] + matrix[i][(2 * j) + 1];
+		}
+	}
 
+
+	
+	for (int i = 1; i < N+1; i++) {
+		for (int j = 1; j < 2 * N; j++) {
+			printf("%d ", matrix[i][j]);
+		}
+		printf("\n");
+	}
+}
 /****************************************************************/
 
 struct Node {
@@ -248,6 +275,9 @@ int main() {
 
 	logFunction();
 	printf("\n");
+
+	printf("print matrix of neighborhood tree:\n");
+	createMatrix();
 		
 	root = insert(root, 50);
 	insert(root, 30);
