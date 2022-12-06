@@ -84,7 +84,7 @@ void nodeDegree() {
 	}
 }
 
-
+/*********************************************************************/
 
 
 struct node {
@@ -142,16 +142,14 @@ void addEdge(struct Graph* graph, int s, int d) {
 	graph->adjList[s] = newNode;
 }
 
-/*************************************************************/
+/**********************************************************************/
+//function to create matrix contains all neighborhood trees' list
 void createMatrix() {
 	for (int i = 1; i < N+1; i++) {
 		for (int j = (2*N)-1 ; j > 0; j--) {
 			if (j < N+1) {
 				matrix[i][j+ (N-1)] = adj_matrix[i][j];
-				
 			}
-			
-			
 		}
 	}
 	for (int i = 1; i < N + 1; i++) {
@@ -160,8 +158,7 @@ void createMatrix() {
 		}
 	}
 
-
-	
+		
 	for (int i = 1; i < N+1; i++) {
 		for (int j = 1; j < 2 * N; j++) {
 			printf("%d ", matrix[i][j]);
@@ -171,55 +168,64 @@ void createMatrix() {
 }
 /****************************************************************/
 
+
+
+
 struct Node {
 	int data;
 	struct Node* left;
 	struct Node* right;
+	int rcount;
+	int lcount;
 }*root =NULL, *top= NULL;
 
 struct Node* newNode(int data) {
 	struct Node* t = (struct Node*)malloc(sizeof(struct Node));
 	t->data = data;
 	t->left = t->right = NULL;
+	t -> rcount = t->lcount = 0;
 	return t;
 }
 
-struct Node *insert(struct Node *p, int key) {
-	
-	if (p == NULL) {
-		return newNode(key);
+bool isBinaryTreePerfect(int count) {
+	count = count + 1;
+	while (count % 2 == 0) {
+		count = count / 2;
 	}
-	
-	if (key < p->data) {
-		p->left = insert(p->left, key);
+	if (count == 1) {
+		return true;
 	}
-	else if (key > p->data) {
-		p->right = insert(p->right, key);
-	}
-	return p;
-}
-
-struct node* insertNeighborhood(struct Node* p, int n) {
-	while(n>1) { 
-		if (p == NULL) {
-			return newNode(n);
-
-		}
-		for (int i = 1; i < N + 1; i++) {
-			for (int j = 1; j < n + 1; j++) {
-				if (adj_matrix[i][j] == 1 && j < (n / 2) + 1) {
-					p->left = insertNeighborhood(p->left, (n / 2));
-				}
-				else if (adj_matrix[i][j] == 1 && j > (n / 2) + 1) {
-					p->right = insertNeighborhood(p->right, n / 2);
-				}
-				return p;
-			}
-		}
-	}
-	
+	else
+		return false;
 
 }
+
+struct Node *insert(struct Node *root, int data) {
+	
+	if (root == NULL) {
+		return newNode(data);
+	}
+	
+	if (root->rcount == root->lcount) {
+		root->left = insert(root->left, data);
+		root->lcount += 1;
+	}
+
+	else if (root->rcount < root->lcount) {
+
+		if (isPBT(root->lcount)) {
+			root->right = insert(root->right, data);
+			root->rcount += 1;
+		}
+		else {
+			root->left = insert(root->left, data);
+			root->lcount += 1;
+		}
+	}
+	return root;
+}
+
+
 
 //post-order binary representation
 void postOrder(struct Node* Node) {
@@ -279,29 +285,14 @@ int main() {
 	printf("print matrix of neighborhood tree:\n");
 	createMatrix();
 		
-	root = insert(root, 50);
-	insert(root, 30);
-	insert(root, 20);
-	insert(root, 40);
-	insert(root, 70);
-	insert(root, 60);
-	insert(root, 80);
-	printf("print inorder list for binary tree: \n");
-	inOrder(root);
-	printf("\n");
-
-	printf("print inorder list for neighborhood tree: \n");
-	int n = 8;
-	top = insertNeighborhood(top, n);
-	insertNeighborhood(top, 4);
-	//insertNeighborhood(top, 2);
-	inOrder(top);
-
-	for (int i = N+1; i > 1; i = i / 2) {
-		insertNeighborhood(top, i);
+	printf("print all binary neighborhood tree:\n");
+	for (int i = 1; i < N + 1; i++) {
+		for (int j = 1; j < 2 * N; j++) {
+			root = insert(root, matrix[i][j]);
+		}
+		printf("\n");
 	}
-	
-	
+	inOrder(root);
 
 	
 	
@@ -381,6 +372,43 @@ struct Node* insertLevelOrder(int arr[], int i, int n) {
 	return root;
 }
 
+struct node* insertNeighborhood(struct Node* p, int n) {
+	while(n>1) {
+		if (p == NULL) {
+			return newNode(n);
+
+		}
+		for (int i = 1; i < N + 1; i++) {
+			for (int j = 1; j < n + 1; j++) {
+				if (adj_matrix[i][j] == 1 && j < (n / 2) + 1) {
+					p->left = insertNeighborhood(p->left, (n / 2));
+				}
+				else if (adj_matrix[i][j] == 1 && j > (n / 2) + 1) {
+					p->right = insertNeighborhood(p->right, n / 2);
+				}
+				return p;
+			}
+		}
+	}
+
+
+}
+
+struct Node *insert(struct Node *p, int key) {
+
+	if (p == NULL) {
+		return newNode(key);
+	}
+
+	if (key < p->data) {
+		p->left = insert(p->left, key);
+	}
+	else if (key > p->data) {
+		p->right = insert(p->right, key);
+	}
+	return p;
+}
+
 //main block
 
 
@@ -391,6 +419,16 @@ struct Node* insertLevelOrder(int arr[], int i, int n) {
 
 	printf("converted array:\n");
 	convertStringToInteger(fpointer);
+	root = insert(root, 50);
+	insert(root, 30);
+	insert(root, 20);
+	insert(root, 40);
+	insert(root, 70);
+	insert(root, 60);
+	insert(root, 80);
+	printf("print inorder list for binary tree: \n");
+	inOrder(root);
+	printf("\n");
 
 */
 
