@@ -15,14 +15,14 @@ int u_[N];
 int v_[N];
 int num_edges = 0;
 int degree;
-int height;
+int heightOfTree;
 
 
 //function to calculate the height of a binary tree
 int logFunction() {
-	height = log2(N);
-	printf("log2 of N is: %d", height);
-	return height;
+	heightOfTree = log2(N);
+	printf("log2 of N is: %d", heightOfTree);
+	return heightOfTree;
 	
 }
 
@@ -92,8 +92,6 @@ struct node {
 	struct node* next;
 };
 
-struct node* createNode(int);
-
 struct Graph {
 	int numVertices;
 	struct node** adjList;
@@ -143,7 +141,7 @@ void addEdge(struct Graph* graph, int s, int d) {
 }
 
 /**********************************************************************/
-//function to create matrix contains all neighborhood trees' list
+//function to create matrix contains all neighborhood trees' list (level order)
 void createMatrix() {
 	for (int i = 1; i < N+1; i++) {
 		for (int j = (2*N)-1 ; j > 0; j--) {
@@ -171,6 +169,7 @@ void createMatrix() {
 
 
 
+
 struct Node {
 	int data;
 	struct Node* left;
@@ -178,6 +177,7 @@ struct Node {
 	int rcount;
 	int lcount;
 }*root =NULL, *top= NULL;
+
 
 struct Node* newNode(int data) {
 	struct Node* t = (struct Node*)malloc(sizeof(struct Node));
@@ -187,7 +187,22 @@ struct Node* newNode(int data) {
 	return t;
 }
 
-bool isBinaryTreePerfect(int count) {
+void deleteNode(struct Node* node) {
+	if (node == NULL)
+		return;
+	if (node) {
+		deleteNode(node->left);
+		deleteNode(node->right);
+		free(node);
+	}
+}
+
+void deleteTreeWithRoot(struct Node** node_root) {
+	deleteNode(*node_root);
+	*node_root = NULL;
+}
+
+bool isBinaryTreeComplete(int count) {
 	count = count + 1;
 	while (count % 2 == 0) {
 		count = count / 2;
@@ -213,7 +228,7 @@ struct Node *insert(struct Node *root, int data) {
 
 	else if (root->rcount < root->lcount) {
 
-		if (isBinaryTreePerfect(root->lcount)) {
+		if (isBinaryTreeComplete(root->lcount)) {
 			root->right = insert(root->right, data);
 			root->rcount += 1;
 		}
@@ -225,9 +240,59 @@ struct Node *insert(struct Node *root, int data) {
 	return root;
 }
 
+//print nodes at current level
+void printCurrentLevel(struct Node* root, int level) {
+	if (root == NULL)
+		return;
+	if (level == 1) {
+		printf("%d ", root->data);
+	}
+	else if (level > 1) {
+		printCurrentLevel(root->left, level - 1);
+		printCurrentLevel(root->right, level - 1);
+	}
+}
 
+//function to compute the height of tree
+int height(struct Node* node)
+{
+	if (node == NULL)
+		return 0;
+	else {
+		/* compute the height of each subtree */
+		int lheight = height(node->left);
+		int rheight = height(node->right);
 
-//post-order binary representation
+		/* use the larger one */
+		if (lheight > rheight)
+			return (lheight + 1);
+		else
+			return (rheight + 1);
+	}
+}
+
+//level order binary tree representation
+void levelOrder(struct Node* root) {
+	int h = height(root);
+	int i;
+	for (i = 1; i <= h; i++) {
+		printCurrentLevel(root, i);
+		printf("\n");
+	}
+}
+
+//function to print all neighborhood tree in level order
+void printLevelOrder() {
+	for (int i = 1; i < N + 1; i++) {
+		for (int j = 1; j < 2 * N; j++) {
+			root = insert(root, matrix[i][j]);
+		}
+		levelOrder(root);
+		deleteTreeWithRoot(&root);
+	}
+}
+
+//post-order binary tree representation
 void postOrder(struct Node* Node) {
 	if (Node == NULL) {
 		return;
@@ -241,7 +306,7 @@ void postOrder(struct Node* Node) {
 }
 
 
-//in-order binary representation
+//in-order binary tree representation
 void inOrder(struct Node* Node) {
 	if (Node == NULL) {
 		return;
@@ -286,18 +351,8 @@ int main() {
 	printf("print matrix of neighborhood tree:\n");
 	createMatrix();
 		
-	printf("print all binary neighborhood tree:\n");
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < 2 * N; j++) {
-			root = insert(root, matrix[i][j]);
-		}
-		printf("\n");
-	}
-	
-	inOrder(root);
-	
-
-
+	printf("print level order of all binary neighborhood tree:\n");
+	printLevelOrder();
 	
 	
 	return 0;
