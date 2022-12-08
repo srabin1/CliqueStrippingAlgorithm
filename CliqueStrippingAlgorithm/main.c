@@ -16,6 +16,8 @@ int v_[N];
 int num_edges = 0;
 int degree;
 int heightOfTree;
+float delta = 1;
+int k;
 
 
 //function to calculate the height of a binary tree
@@ -60,7 +62,7 @@ void load_adj_matrix() {
 }
 
 //function to count number of edge in graph G
-void get_edges() {
+int get_edges() {
 
 	for (int i = 1; i < N + 1; i++) {
 		for (int j = 1; j < N + 1; j++) {
@@ -68,7 +70,18 @@ void get_edges() {
 		}
 	}
 	printf("%d", num_edges);
+	return num_edges;
 
+}
+
+//function to calculate k
+int get_k() {
+
+	float denominator = (2 * pow((double)N, 2)) / num_edges;
+	float numerator = delta * log2((double)N);
+	k = floor((double)numerator / (log2((double)denominator)));
+	printf("%d",k);
+	return k;
 }
 
 //function to calculate degree of each vertex in part U
@@ -83,6 +96,8 @@ void nodeDegree() {
 
 	}
 }
+
+
 
 /*********************************************************************/
 
@@ -287,37 +302,31 @@ void printLevelOrder() {
 		for (int j = 1; j < 2 * N; j++) {
 			root = insert(root, matrix[i][j]);
 		}
-		levelOrder(root);
+		levelOrder(root); 
 		deleteTreeWithRoot(&root);
 	}
 }
 
-//post-order binary tree representation
-void postOrder(struct Node* Node) {
-	if (Node == NULL) {
-		return;
-	}
-	if (Node != NULL) {
-		postOrder(Node->left);
-		postOrder(Node->right);
-		printf("%d\n", Node->data);
 
+
+/********************************Clique Stripping Algorithm**********************/
+int t = 1;
+int getCZero() {
+	int c_0 = 0;
+	for (int i = 1; i < N + 1; i++) {
+		for (int j = 1; i < 2 * N; j++) {
+			root = insert(root, matrix[i][j]);
+		}
+		levelOrder(root);
+		c_0 = c_0 + (root->left->data) * pow((root->data), (k - t));
+		deleteTreeWithRoot(&root);
 	}
+	printf("c_0 is %d: \n", c_0);
+	return c_0;
 }
 
 
-//in-order binary tree representation
-void inOrder(struct Node* Node) {
-	if (Node == NULL) {
-		return;
-	}
-	if (Node != NULL) {
-		inOrder(Node->left);
-		printf("%d\n", Node->data);
-		inOrder(Node->right);
-	}
-	
-}
+
 
 
 int main() {
@@ -335,8 +344,10 @@ int main() {
 
 		}
 	}
+	
 	printf("load adjacency list:\n");
 	printGraph(graph);
+	printf("\n");
 	
 	printf("get edges:\n");
 	get_edges();
@@ -344,6 +355,11 @@ int main() {
 
 	printf("get degree:\n");
 	nodeDegree();
+	printf("\n");
+
+	printf("value of k is: \n");
+	get_k();
+	printf("\n");
 
 	logFunction();
 	printf("\n");
@@ -353,6 +369,10 @@ int main() {
 		
 	printf("print level order of all binary neighborhood tree:\n");
 	printLevelOrder();
+	printf("\n");
+
+	printf("print c0:\n");
+	getCZero();
 	
 	
 	return 0;
@@ -466,6 +486,33 @@ struct Node *insert(struct Node *p, int key) {
 		p->right = insert(p->right, key);
 	}
 	return p;
+}
+
+//post-order binary tree representation
+void postOrder(struct Node* Node) {
+	if (Node == NULL) {
+		return;
+	}
+	if (Node != NULL) {
+		postOrder(Node->left);
+		postOrder(Node->right);
+		printf("%d\n", Node->data);
+
+	}
+}
+
+
+//in-order binary tree representation
+void inOrder(struct Node* Node) {
+	if (Node == NULL) {
+		return;
+	}
+	if (Node != NULL) {
+		inOrder(Node->left);
+		printf("%d\n", Node->data);
+		inOrder(Node->right);
+	}
+
 }
 
 //main block
