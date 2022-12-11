@@ -99,10 +99,7 @@ void nodeDegree() {
 	}
 }
 
-
-
-/*********************************************************************/
-
+/*******************************************************************/
 
 struct node {
 	int vertex;
@@ -130,7 +127,7 @@ struct Graph* createGraph() {
 	int i;
 	for (i = 1; i < N + 1; i++)
 		graph->adjList[i] = NULL;
-		
+
 	return graph;
 }
 
@@ -183,17 +180,13 @@ void createMatrix() {
 }
 /****************************************************************/
 
-
-
-
-
 struct Node {
 	int data;
 	struct Node* left;
 	struct Node* right;
 	int rcount;
 	int lcount;
-}*root =NULL, *pathNode= NULL;
+}*root =NULL, *newRoot= NULL;
 
 
 struct Node* newNode(int data) {
@@ -309,6 +302,23 @@ void printLevelOrder() {
 	}
 }
 
+/************************************/
+struct newNode {
+	int data;
+	struct newNode* leftNode;
+	struct newNode* rightNode;
+}*rootNode;
+
+struct newNode* insertPath(struct newNode* rootNode, int data) {
+	if (rootNode == NULL) {
+		return insertPath(root, N);
+	}
+	rootNode->leftNode = insertPath(rootNode->leftNode, c_zero);
+	rootNode->rightNode = insertPath(rootNode->rightNode, c_one);
+}
+
+
+
 
 
 /********************************Clique Stripping Algorithm**********************/
@@ -358,7 +368,6 @@ int main() {
 	printLevelOrder();
 
 	
-	
 	/*int t = 1, i = 1;
 	
 	for (int i = 1; i < N + 1; i++) {
@@ -375,21 +384,43 @@ int main() {
 	printf("print c1: %d\n", c_one);
 	*/
 
-	
+
+	int x = 1; int j = 1;
+	while (j < N) {
+		for (int i = 1; i < N + 1; i++) {
+				c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - x));
+				c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - x));
+		}
+		printf("print c0: %d\n", c_zero);
+		printf("print c1: %d\n", c_one);
+
+		if (c_zero >= c_one) {
+			c_zero = c_one = 0;
+			j=2*j;
+		}
+		else {
+			c_zero = c_one = 0;
+			j=(2*j)+1;
+		}
+		
+	}
 	
 
 	
+
+/*
 	int t = 1, i = 1;
-
 	for (int i = 1; i < N + 1; i++) {
 		for (int j = 1; j < 2 * N; j++) {
 			root = insert(root, matrix[i][j]);
 		}
-		levelOrder(root);
 		c_zero = c_zero + (root->left->data) * pow(((root->data) - 1), (k - t));
 		c_one = c_one + (root->right->data) * pow(((root->data) - 1), (k - t));
 		deleteTreeWithRoot(&root);
 	}
+	
+	printf("print c0: %d\n", c_zero);
+	printf("print c1: %d\n", c_one);
 
 
 		if (c_zero >= c_one) {
@@ -400,7 +431,9 @@ int main() {
 				}
 				c_zero = c_zero + (root->left->left->data) * pow(((root->data) - 1), (k - t));
 				c_one = c_one + (root->left->right->data) * pow(((root->data) - 1), (k - t));
+				deleteTreeWithRoot(&root);
 			}
+			
 		}
 		else{
 			c_zero = c_one = 0;
@@ -410,19 +443,45 @@ int main() {
 				}
 				c_zero = c_zero + (root->right->left->data) * pow(((root->data) - 1), (k - t));
 				c_one = c_one + (root->right->right->data) * pow(((root->data) - 1), (k - t));
+				deleteTreeWithRoot(&root);
 			}
 		}
-			
-		deleteTreeWithRoot(&root);
-	
 
 	printf("print c0: %d\n", c_zero);
 	printf("print c1: %d\n", c_one);
 
+	//below step is not correct try to build another binary tree to store all values and finally find the path 
+	if (c_zero >= c_one) {
+		c_zero = c_one = 0;
+		for (int i = 1; i < N + 1; i++) {
+			for (int j = 1; j < 2 * N; j++) {
+				root = insert(root, matrix[i][j]);
+			}
+			c_zero = c_zero + (root->left->left->left->data) * pow(((root->data) - 1), (k - t));
+			c_one = c_one + (root->left->left->right->data) * pow(((root->data) - 1), (k - t));
+			deleteTreeWithRoot(&root);
+		}
+
+	}
+	else {
+		c_zero = c_one = 0;
+		for (int i = 1; i < N + 1; i++) {
+			for (int j = 1; j < 2 * N; j++) {
+				root = insert(root, matrix[i][j]);
+			}
+			c_zero = c_zero + (root->right->left->data) * pow(((root->data) - 1), (k - t));
+			c_one = c_one + (root->right->right->data) * pow(((root->data) - 1), (k - t));
+			deleteTreeWithRoot(&root);
+		}
+	}
+
+	printf("print c0: %d\n", c_zero);
+	printf("print c1: %d\n", c_one);
+
+	*/
 
 
-
-	printf("print string w: \n");
+	/*printf("print string w: \n");
 	//for (int i = 1; i < N + 1; i++) {
 		for (int j = 1; j < 2 * N; j++) {
 			pathNode = insert(root, matrix[i][j]);
@@ -436,11 +495,9 @@ int main() {
 		levelOrder(pathNode);
 		//deleteTreeWithRoot(&root);
 	//}
+
+	*/
 	
-	
-	
-	
-	//getCZero();
 	
 	
 	return 0;
@@ -605,4 +662,3 @@ void inOrder(struct Node* Node) {
 	printf("\n");
 
 */
-
