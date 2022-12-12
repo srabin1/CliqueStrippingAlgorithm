@@ -20,6 +20,7 @@ float delta = 1;
 int k;
 int c_zero = 0;
 int c_one = 0;
+int last_index = 0;
 
 
 //function to calculate the height of a binary tree
@@ -309,14 +310,18 @@ void printLevelOrder() {
 
 /********************************Clique Stripping Algorithm**********************/
 
+//function to add selected indices to vector v
+
+
+
 //function to find c0 and c1
 void find_czero_cone() {
-	int x = 1; int j = 1;
+	int t = 1; int j = 1;
 	int count = 0;
 	while (j < N) {
 		for (int i = 1; i < N + 1; i++) {
-			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - x));
-			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - x));
+			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
+			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 		}
 		printf("print c0: %d\n", c_zero);
 		printf("print c1: %d\n", c_one);
@@ -335,12 +340,12 @@ void find_czero_cone() {
 }
 
 //function to find the selected path and corresponding string w
-void printPathW() {
-	int x = 1; int j = 1;
+void printSelectedString() {
+	int t = 1; int j = 1;
 	while (j < N) {
 		for (int i = 1; i < N + 1; i++) {
-			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - x));
-			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - x));
+			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
+			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 		}
 
 		if (c_zero >= c_one) {
@@ -358,7 +363,7 @@ void printPathW() {
 
 //function to print all c0 and c1 in all levels
 void printAll_czero_cone() {
-	int y = 1; int j = 1;
+	int t = 1; int j = 1;
 
 	while (j < N) {
 		if (newRoot == NULL) {
@@ -367,8 +372,8 @@ void printAll_czero_cone() {
 		else {
 
 			for (int i = 1; i < N + 1; i++) {
-				c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - y));
-				c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - y));
+				c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
+				c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 			}
 			newRoot->left = insert(newRoot->left, c_zero);
 			newRoot->right = insert(newRoot->right, c_one);
@@ -378,6 +383,104 @@ void printAll_czero_cone() {
 	}
 	levelOrder(newRoot);
 }
+
+void printSelectedIndices() {
+	int t = 1; int j = 1;
+	int size = 0;
+	int arr[1000];
+	while (j < N) {
+		for (int i = 1; i < N + 1; i++) {
+			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
+			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
+		}
+		
+		if (c_zero >= c_one) {
+			c_zero = c_one = 0;
+			j = 2 * j;
+			arr[size] = j;
+		}
+		else {
+			c_zero = c_one = 0;
+			j = (2 * j) + 1;
+			arr[size] = j;
+		}
+		size++;
+	}
+	for (int i = 0; i < size; i++) {
+		printf("%d ", arr[i]);
+	}
+}
+
+
+void printLastIndex() {
+	int t = 1; int j = 1;
+	int size = 0;
+	int arr[1000];
+	while (j < N) {
+		for (int i = 1; i < N + 1; i++) {
+			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
+			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
+		}
+
+		if (c_zero >= c_one) {
+			c_zero = c_one = 0;
+			j = 2 * j;
+			arr[size] = j;
+		}
+		else {
+			c_zero = c_one = 0;
+			j = (2 * j) + 1;
+
+			arr[size] = j;
+		}
+		size++;
+	}
+	for (int i = 0; i < size; i++) {
+		if (i = size - 1) {
+			last_index = arr[i];
+		}
+		printf("%d ", last_index);
+	}
+}
+
+void updateBinaryTree() {
+	for (int i = 1; i < N + 1; i++) {
+		for (int l = 1; l < 2 * N; l++) {
+			if (l == last_index) {
+				matrix[i][l] == 0;
+			}
+		}
+	}
+	int t = 1; int j = 1;
+	int size = 0;
+	int arr[1000];
+	while (j < N) {
+		for (int i = 1; i < N + 1; i++) {
+			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
+			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
+		}
+
+		if (c_zero >= c_one) {
+			c_zero = c_one = 0;
+			j = 2 * j;
+			arr[size] = j;
+		}
+		else {
+			c_zero = c_one = 0;
+			j = (2 * j) + 1;
+
+			arr[size] = j;
+		}
+		size++;
+	}
+	for (int i = 0; i < size; i++) {
+		if (i = size - 1) {
+			last_index = arr[i];
+		}
+		printf("%d ", last_index);
+	}
+}
+
 
 /************************************/
 struct newNode {
@@ -418,6 +521,9 @@ int main() {
 		}
 	}
 
+	
+	
+
 	printf("load adjacency list:\n");
 	printGraph(graph);
 	printf("\n");
@@ -454,11 +560,36 @@ int main() {
 	printf("\n");
 
 	printf("print selected string w:\n");
-	printPathW();
+	printSelectedString();
+	printf("\n");
+
+	printf("print string selected indices: \n");
+	printSelectedIndices();
+	printf("\n");
+
+	printf("print string last index: \n");
+	printLastIndex();
+	printf("\n");
+
+	printf("print update binary tree: \n");
+	updateBinaryTree();
 	printf("\n");
 
 
-
+	for (int i = 1; i < N + 1; i++) {
+		for (int l = 1; l < 2 * N; l++) {
+			if (l == last_index) {
+				matrix[i][l] == 0;
+			}
+		}
+	}
+	for (int i = 1; i < N + 1; i++) {
+		for (int l = 1; l < 2 * N; l++) {
+				printf("%d", matrix[i][l]);
+		}
+		printf("\n");
+	}
+	
 
 
 
