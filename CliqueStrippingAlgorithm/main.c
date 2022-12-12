@@ -188,7 +188,7 @@ struct Node {
 	int lcount;
 }*root =NULL, *newRoot= NULL;
 
-
+//function to create a new node
 struct Node* newNode(int data) {
 	struct Node* t = (struct Node*)malloc(sizeof(struct Node));
 	t->data = data;
@@ -197,6 +197,7 @@ struct Node* newNode(int data) {
 	return t;
 }
 
+//function to delete all nodes of a tree
 void deleteNode(struct Node* node) {
 	if (node == NULL)
 		return;
@@ -207,11 +208,13 @@ void deleteNode(struct Node* node) {
 	}
 }
 
+//function to delete all nodes including root node
 void deleteTreeWithRoot(struct Node** node_root) {
 	deleteNode(*node_root);
 	*node_root = NULL;
 }
 
+//function to check if binary tree is complete
 bool isBinaryTreeComplete(int count) {
 	count = count + 1;
 	while (count % 2 == 0) {
@@ -225,6 +228,7 @@ bool isBinaryTreeComplete(int count) {
 
 }
 
+//function to insert new node according to the complete binary tree representation
 struct Node *insert(struct Node *root, int data) {
 	
 	if (root == NULL) {
@@ -302,6 +306,79 @@ void printLevelOrder() {
 	}
 }
 
+
+/********************************Clique Stripping Algorithm**********************/
+
+//function to find c0 and c1
+void find_czero_cone() {
+	int x = 1; int j = 1;
+	int count = 0;
+	while (j < N) {
+		for (int i = 1; i < N + 1; i++) {
+			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - x));
+			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - x));
+		}
+		printf("print c0: %d\n", c_zero);
+		printf("print c1: %d\n", c_one);
+
+		if (c_zero >= c_one) {
+			c_zero = c_one = 0;
+			j = 2 * j;
+		}
+		else {
+			c_zero = c_one = 0;
+			j = (2 * j) + 1;
+		}
+		count++;
+	}
+	printf("count: %d\n", count);
+}
+
+//function to find the selected path and corresponding string w
+void printPathW() {
+	int x = 1; int j = 1;
+	while (j < N) {
+		for (int i = 1; i < N + 1; i++) {
+			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - x));
+			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - x));
+		}
+
+		if (c_zero >= c_one) {
+			printf("print c0: %d\n", c_zero);
+			c_zero = c_one = 0;
+			j = 2 * j;
+		}
+		else {
+			printf("print c1: %d\n", c_one);
+			c_zero = c_one = 0;
+			j = (2 * j) + 1;
+		}
+	}
+}
+
+//function to print all c0 and c1 in all levels
+void printAll_czero_cone() {
+	int y = 1; int j = 1;
+
+	while (j < N) {
+		if (newRoot == NULL) {
+			newRoot = insert(newRoot, N);
+		}
+		else {
+
+			for (int i = 1; i < N + 1; i++) {
+				c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - y));
+				c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - y));
+			}
+			newRoot->left = insert(newRoot->left, c_zero);
+			newRoot->right = insert(newRoot->right, c_one);
+			c_zero = c_one = 0;
+			j++;
+		}
+	}
+	levelOrder(newRoot);
+}
+
 /************************************/
 struct newNode {
 	int data;
@@ -321,7 +398,6 @@ struct newNode* insertPath(struct newNode* rootNode, int data) {
 
 
 
-/********************************Clique Stripping Algorithm**********************/
 
 
 
@@ -363,12 +439,40 @@ int main() {
 
 	printf("print matrix of neighborhood tree:\n");
 	createMatrix();
+	printf("\n");
 
 	printf("print level order of all binary neighborhood tree:\n");
 	printLevelOrder();
+	printf("\n");
+
+	printf("print c0 and c1:\n");
+	find_czero_cone();
+	printf("\n");
+
+	printf("print all c0 and c1:\n");
+	printAll_czero_cone();
+	printf("\n");
+
+	printf("print selected string w:\n");
+	printPathW();
+	printf("\n");
+
+
+
+
+
+
+
 
 	
-	/*int t = 1, i = 1;
+	
+	
+
+	
+
+/*
+* 
+* 	/*int t = 1, i = 1;
 	
 	for (int i = 1; i < N + 1; i++) {
 		for (int j = 1; j < 2 * N; j++) {
@@ -382,33 +486,8 @@ int main() {
 	
 	printf("print c0: %d\n", c_zero);
 	printf("print c1: %d\n", c_one);
-	*/
-
-
-	int x = 1; int j = 1;
-	while (j < N) {
-		for (int i = 1; i < N + 1; i++) {
-				c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - x));
-				c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - x));
-		}
-		printf("print c0: %d\n", c_zero);
-		printf("print c1: %d\n", c_one);
-
-		if (c_zero >= c_one) {
-			c_zero = c_one = 0;
-			j=2*j;
-		}
-		else {
-			c_zero = c_one = 0;
-			j=(2*j)+1;
-		}
-		
-	}
 	
 
-	
-
-/*
 	int t = 1, i = 1;
 	for (int i = 1; i < N + 1; i++) {
 		for (int j = 1; j < 2 * N; j++) {
