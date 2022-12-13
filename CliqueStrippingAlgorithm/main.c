@@ -170,7 +170,11 @@ void createMatrix() {
 		}
 	}
 
-		
+	/*for (int i = 1; i < N + 1; i++) {
+		matrix[i][14] = 0;
+		}
+		*/
+
 	for (int i = 1; i < N+1; i++) {
 		for (int j = 1; j < 2 * N; j++) {
 			printf("%d ", matrix[i][j]);
@@ -308,11 +312,6 @@ void printLevelOrder() {
 
 
 /********************************Clique Stripping Algorithm**********************/
-
-//function to add selected indices to vector v
-
-
-
 //function to find c0 and c1
 void find_czero_cone() {
 	int t = 1; int j = 1;
@@ -450,13 +449,11 @@ void updateBinaryTree() {
 	int arr[1000] = { 0 };
 	while (t < k + 1) {
 		c_zero = c_one = 0;
-		for (int i = 1; i < N + 1; i++) {
-			matrix[i][last_index] == 0;
-		}
 		int j = 1;
 		size = 0;
+		 
 		while (j < N) {
-			for (int i = 1; i < N + 1; i++) {				
+			for (int i = 1; i < N + 1; i++) {
 				c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
 				c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 			}
@@ -484,6 +481,16 @@ void updateBinaryTree() {
 		for (int i = 0; i < size; i++) {
 			printf("%d", arr[i]);
 		}
+		printf("\n");
+
+		
+		int l = 0;
+		for (int i = 1; i < N + 1; i++) {
+			l = last_index - (N - 1);
+			adj_matrix[i][l] = 0;
+		}
+		createMatrix();
+		
 		t++;		
 	}
 }
