@@ -20,7 +20,6 @@ float delta = 1;
 int k;
 int c_zero = 0;
 int c_one = 0;
-int last_index = 0;
 
 
 //function to calculate the height of a binary tree
@@ -415,6 +414,7 @@ void printSelectedIndices() {
 void printLastIndex() {
 	int t = 1; int j = 1;
 	int size = 0;
+	int last_index = 0;
 	int arr[1000];
 	while (j < N) {
 		for (int i = 1; i < N + 1; i++) {
@@ -430,7 +430,6 @@ void printLastIndex() {
 		else {
 			c_zero = c_one = 0;
 			j = (2 * j) + 1;
-
 			arr[size] = j;
 		}
 		size++;
@@ -441,66 +440,53 @@ void printLastIndex() {
 		}
 		printf("%d ", last_index);
 	}
+
 }
 
 void updateBinaryTree() {
-	for (int i = 1; i < N + 1; i++) {
-		for (int l = 1; l < 2 * N; l++) {
-			if (l == last_index) {
-				matrix[i][l] == 0;
-			}
-		}
-	}
-	int t = 1; int j = 1;
+	int t = 1;
 	int size = 0;
-	int arr[1000];
-	while (j < N) {
+	int last_index = 0;
+	int arr[1000] = { 0 };
+	while (t < k + 1) {
+		c_zero = c_one = 0;
 		for (int i = 1; i < N + 1; i++) {
-			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
-			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
+			matrix[i][last_index] == 0;
 		}
+		int j = 1;
+		size = 0;
+		while (j < N) {
+			for (int i = 1; i < N + 1; i++) {				
+				c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
+				c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
+			}
+			printf("print c0: %d\n", c_zero);
+			printf("print c1: %d\n", c_one);
 
-		if (c_zero >= c_one) {
-			c_zero = c_one = 0;
-			j = 2 * j;
-			arr[size] = j;
+			if (c_zero >= c_one) {
+				c_zero = c_one = 0;
+				j = 2 * j; 
+				arr[size] = j;
+			}
+			else {
+				c_zero = c_one = 0;
+				j = (2 * j) + 1;
+				arr[size] = j;
+			}
+			size++;
 		}
-		else {
-			c_zero = c_one = 0;
-			j = (2 * j) + 1;
-
-			arr[size] = j;
+		last_index = arr[size - 1];
+		printf("last index: %d", last_index);
+		printf("\n");
+		for (int i = 0; i < size; i++) {
+			arr[i] = 0 ;
 		}
-		size++;
-	}
-	for (int i = 0; i < size; i++) {
-		if (i = size - 1) {
-			last_index = arr[i];
+		for (int i = 0; i < size; i++) {
+			printf("%d", arr[i]);
 		}
-		printf("%d ", last_index);
+		t++;		
 	}
 }
-
-
-/************************************/
-struct newNode {
-	int data;
-	struct newNode* leftNode;
-	struct newNode* rightNode;
-}*rootNode;
-
-struct newNode* insertPath(struct newNode* rootNode, int data) {
-	if (rootNode == NULL) {
-		return insertPath(root, N);
-	}
-	rootNode->leftNode = insertPath(rootNode->leftNode, c_zero);
-	rootNode->rightNode = insertPath(rootNode->rightNode, c_one);
-}
-
-
-
-
-
 
 
 
@@ -573,33 +559,14 @@ int main() {
 
 	printf("print update binary tree: \n");
 	updateBinaryTree();
-	printf("\n");
-
-
-	for (int i = 1; i < N + 1; i++) {
-		for (int l = 1; l < 2 * N; l++) {
-			if (l == last_index) {
-				matrix[i][l] == 0;
-			}
-		}
-	}
-	for (int i = 1; i < N + 1; i++) {
-		for (int l = 1; l < 2 * N; l++) {
-				printf("%d", matrix[i][l]);
-		}
-		printf("\n");
-	}
 	
 
 
 
 
 
-	
-	
-	
 
-	
+	return 0;
 
 /*
 * 
@@ -688,10 +655,7 @@ int main() {
 	printf("print c0: %d\n", c_zero);
 	printf("print c1: %d\n", c_one);
 
-	*/
-
-
-	/*printf("print string w: \n");
+	printf("print string w: \n");
 	//for (int i = 1; i < N + 1; i++) {
 		for (int j = 1; j < 2 * N; j++) {
 			pathNode = insert(root, matrix[i][j]);
@@ -709,8 +673,6 @@ int main() {
 	*/
 	
 	
-	
-	return 0;
 }
  
 
