@@ -87,7 +87,7 @@ int get_k() {
 }
 
 //function to calculate degree of each vertex in part U
-void nodeDegree() {
+void getDegreeOfU() {
 
 	for (int i = 1; i < N + 1; i++) {
 		degree = 0;
@@ -95,6 +95,18 @@ void nodeDegree() {
 			degree = degree + adj_matrix[i][j];
 		}
 		printf("degree of u[%d] is: %d\n", i, degree);
+
+	}
+}
+
+void getDegreeOfV() {
+
+	for (int j = 1; j < N + 1; j++) {
+		degree = 0;
+		for (int i = 1; i < N + 1; i++) {
+			degree = degree + adj_matrix[i][j];
+		}
+		printf("degree of v[%d] is: %d\n", j, degree);
 
 	}
 }
@@ -137,7 +149,7 @@ void printGraph(struct Graph* graph) {
 	int v;
 	for (v = 1; v < graph->numVertices + 1; v++) {
 		struct node* temp = graph->adjList[v];
-		printf("Vertex u[%d]: ", v);
+		printf("Vertex v[%d]: ", v);
 		while (temp) {
 			printf("%d", temp->vertex);
 			temp = temp->next;
@@ -445,8 +457,11 @@ void printLastIndex() {
 void updateBinaryTree() {
 	int t = 1;
 	int size = 0;
+	int count = 0;
 	int last_index = 0;
 	int arr[1000] = { 0 };
+	int finalArrayIndex[1000] = { 0 };
+	struct Graph* bipartite = createGraph(N);
 	while (t < k + 1) {
 		c_zero = c_one = 0;
 		int j = 1;
@@ -487,9 +502,35 @@ void updateBinaryTree() {
 		int l = 0;
 		for (int i = 1; i < N + 1; i++) {
 			l = last_index - (N - 1);
+			finalArrayIndex[count] = l;
+		}
+		count++;
+		for (int j = 1; j < count +1; j++) {
+			for (int i = 1; i < N + 1; i++) {
+				if (adj_matrix[finalArrayIndex[j]][i] == 1) {
+					addEdge(bipartite, i, j);
+				}
+				
+			}
+		}
+
+		printf("load adjacency list bipartite graph :\n");
+		printGraph(bipartite);
+		printf("\n");
+		
+
+			
+		printf("\n");
+		for (int i = 1; i < N + 1; i++) {
+			l = last_index - (N - 1);
 			adj_matrix[i][l] = 0;
 		}
 		createMatrix();
+		printf("print final array index: ");
+		for (int i = 0; i < count; i++) {
+			printf("%d ", finalArrayIndex[i]);
+		}
+		printf("\n");
 		
 		t++;		
 	}
@@ -502,31 +543,36 @@ int main() {
 
 
 	struct Graph* graph = createGraph(N);
-
+	
 	printf("load adjacency matrix:\n");
 	load_adj_matrix();
+
 	for (int i = 1; i < N + 1; i++) {
 		for (int j = 1; j < N + 1; j++) {
-			if (adj_matrix[i][j] == 1) {
+			if (adj_matrix[j][i] == 1) {
 				addEdge(graph, i, j);
 			}
 
 		}
 	}
-
-	
 	
 
-	printf("load adjacency list:\n");
+	printf("load adjacency list for v:\n");
 	printGraph(graph);
 	printf("\n");
+
+
 
 	printf("get edges:\n");
 	get_edges();
 	printf("\n");
 
-	printf("get degree:\n");
-	nodeDegree();
+	printf("get degree of u:\n");
+	getDegreeOfU();
+	printf("\n");
+
+	printf("get degree of v:\n");
+	getDegreeOfV();
 	printf("\n");
 
 	printf("value of k is: \n");
@@ -821,7 +867,20 @@ void inOrder(struct Node* Node) {
 
 //main block
 
+		
+	for (int i = 1; i < N + 1; i++) {
+		for (int j = 1; j < N + 1; j++) {
+			if (adj_matrix[i][j] == 1) {
+				addEdge(graph, i, j);
+			}
 
+		}
+	}
+	
+	printf("load adjacency list for v:\n");
+	printGraph(graph);
+	printf("\n");
+	
 	int n = 17;
 	printf("decimal 17 to binary: ");
 	decToBinary(n);
