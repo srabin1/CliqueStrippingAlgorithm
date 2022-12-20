@@ -10,6 +10,7 @@
 
 
 int adj_matrix[N][N];
+int adj_matrix_fix[N][N];
 int matrix[(2 * N) - 1][(2 * N) - 1];
 int u_[N];
 int v_[N];
@@ -45,6 +46,7 @@ void load_adj_matrix() {
 			char* value = strtok(line, ",");
 			while (value != NULL) {
 				adj_matrix[row][col] = atoi(value);
+				adj_matrix_fix[row][col] = atoi(value);
 				value = strtok(NULL, ",");
 				col++;
 			}
@@ -461,7 +463,7 @@ void updateBinaryTree() {
 	int last_index = 0;
 	int arr[1000] = { 0 };
 	int finalArrayIndex[1000] = { 0 };
-	struct Graph* bipartite = createGraph(N);
+	
 	while (t < k + 1) {
 		c_zero = c_one = 0;
 		int j = 1;
@@ -498,38 +500,37 @@ void updateBinaryTree() {
 		}
 		printf("\n");
 
-		
 		int l = 0;
-		for (int i = 1; i < N + 1; i++) {
-			l = last_index - (N - 1);
-			finalArrayIndex[count] = l;
-		}
-		count++;
-		for (int j = 1; j < count +1; j++) {
-			for (int i = 1; i < N + 1; i++) {
-				if (adj_matrix[finalArrayIndex[j]][i] == 1) {
-					addEdge(bipartite, i, j);
-				}
-				
-			}
-		}
-
-		printf("load adjacency list bipartite graph :\n");
-		printGraph(bipartite);
-		printf("\n");
-		
-
-			
 		printf("\n");
 		for (int i = 1; i < N + 1; i++) {
 			l = last_index - (N - 1);
 			adj_matrix[i][l] = 0;
 		}
 		createMatrix();
+
+		for (int i = 1; i < N + 1; i++) {
+			l = last_index - (N - 1);
+			finalArrayIndex[count] = l;
+		}
+		count++;
+		struct Graph* bipartite = createGraph();
+		for (int j = 0; j < count; j++) {
+			for (int i = 1; i < N + 1; i++) {
+				if (adj_matrix_fix[finalArrayIndex[j]][i] = 1) {
+					addEdge(bipartite, finalArrayIndex[j], i);
+				}
+
+			}
+		}
+
+		printf("load adjacency list for bipartite graph :\n");
+		printGraph(bipartite);
+		printf("\n");
 		printf("print final array index: ");
 		for (int i = 0; i < count; i++) {
 			printf("%d ", finalArrayIndex[i]);
 		}
+
 		printf("\n");
 		
 		t++;		
@@ -542,7 +543,7 @@ void updateBinaryTree() {
 int main() {
 
 
-	struct Graph* graph = createGraph(N);
+	struct Graph* graph = createGraph();
 	
 	printf("load adjacency matrix:\n");
 	load_adj_matrix();
