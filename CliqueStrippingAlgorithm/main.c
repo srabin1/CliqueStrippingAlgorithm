@@ -33,7 +33,7 @@ int logFunction() {
 
 //function to load adjacency matrix from csv file and print it
 void load_adj_matrix() {
-	FILE* fpointer = fopen("Bipartite-graph.csv", "r");
+	FILE* fpointer = fopen("Bipartite-graph1.csv", "r");
 	char line[MAXCHAR];
 	if (!fpointer)
 		printf("Cann't open the file\n");
@@ -66,15 +66,24 @@ void load_adj_matrix() {
 }
 
 //function to count number of edge in graph G
-int get_edges() {
+int m_hat() {
 
 	for (int i = 1; i < N + 1; i++) {
 		for (int j = 1; j < N + 1; j++) {
-			num_edges = num_edges + adj_matrix[i][j];
+			num_edges = num_edges + adj_matrix_fix[i][j];
 		}
 	}
 	printf("%d", num_edges);
 	return num_edges;
+
+}
+
+bool isBoolean() {
+	if (m_hat() >= pow(N, (2 - delta))) {
+		return true;
+	}
+	else 
+		return false;
 
 }
 
@@ -456,7 +465,7 @@ void printLastIndex() {
 
 }
 
-void updateBinaryTree() {
+void runCliqueStrippingAlgorithm() {
 	int t = 1;
 	int size = 0;
 	int count = 0;
@@ -464,11 +473,11 @@ void updateBinaryTree() {
 	int arr[1000] = { 0 };
 	int finalArrayIndex[1000] = { 0 };
 	
-	while (t < k + 1) {
+	while (isBoolean && t < k ) {
 		c_zero = c_one = 0;
 		int j = 1;
 		size = 0;
-		 
+
 		while (j < N) {
 			for (int i = 1; i < N + 1; i++) {
 				c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
@@ -479,7 +488,7 @@ void updateBinaryTree() {
 
 			if (c_zero >= c_one) {
 				c_zero = c_one = 0;
-				j = 2 * j; 
+				j = 2 * j;
 				arr[size] = j;
 			}
 			else {
@@ -493,7 +502,7 @@ void updateBinaryTree() {
 		printf("last index: %d", last_index);
 		printf("\n");
 		for (int i = 0; i < size; i++) {
-			arr[i] = 0 ;
+			arr[i] = 0;
 		}
 		for (int i = 0; i < size; i++) {
 			printf("%d", arr[i]);
@@ -532,9 +541,21 @@ void updateBinaryTree() {
 		}
 
 		printf("\n");
-		
-		t++;		
+
+		struct Graph* bipartiteClique = createGraph();
+		for (int j = 0; j < count; j++) {
+			for (int i = 1; i < N + 1; i++) {
+				if (adj_matrix_fix[finalArrayIndex[j]][i] = 1) {
+					addEdge(bipartiteClique, finalArrayIndex[j], i);
+				}
+
+			}
+		}
+
+		t++;
 	}
+		
+	
 }
 
 
@@ -544,7 +565,7 @@ int main() {
 
 
 	struct Graph* graph = createGraph();
-	
+
 	printf("load adjacency matrix:\n");
 	load_adj_matrix();
 
@@ -556,7 +577,7 @@ int main() {
 
 		}
 	}
-	
+
 
 	printf("load adjacency list for v:\n");
 	printGraph(graph);
@@ -564,9 +585,11 @@ int main() {
 
 
 
-	printf("get edges:\n");
-	get_edges();
+	printf("number of edges:\n");
+	m_hat();
 	printf("\n");
+
+	
 
 	printf("get degree of u:\n");
 	getDegreeOfU();
@@ -612,8 +635,18 @@ int main() {
 	printf("\n");
 
 	printf("print update binary tree: \n");
-	updateBinaryTree();
+	runCliqueStrippingAlgorithm();
+	printf("\n");
+
 	
+	printf("check out boolean function:\n");
+	if (isBoolean()) {
+		printf("the result is true");
+	}
+	else
+		printf("result is false");
+
+	printf("\n");
 
 
 
@@ -621,283 +654,4 @@ int main() {
 
 
 	return 0;
-
-/*
-* 
-* 	/*int t = 1, i = 1;
-	
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < 2 * N; j++) {
-			root = insert(root, matrix[i][j]);
-		}
-		levelOrder(root);
-		c_zero = c_zero + (root->left->data) * pow(((root->data) - 1), (k - t));
-		c_one = c_one + (root->right->data) * pow(((root->data) - 1), (k - t));
-		deleteTreeWithRoot(&root);
-	}
-	
-	printf("print c0: %d\n", c_zero);
-	printf("print c1: %d\n", c_one);
-	
-
-	int t = 1, i = 1;
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < 2 * N; j++) {
-			root = insert(root, matrix[i][j]);
-		}
-		c_zero = c_zero + (root->left->data) * pow(((root->data) - 1), (k - t));
-		c_one = c_one + (root->right->data) * pow(((root->data) - 1), (k - t));
-		deleteTreeWithRoot(&root);
-	}
-	
-	printf("print c0: %d\n", c_zero);
-	printf("print c1: %d\n", c_one);
-
-
-		if (c_zero >= c_one) {
-			c_zero = c_one = 0;
-			for (int i = 1; i < N + 1; i++) {
-				for (int j = 1; j < 2 * N; j++) {
-					root = insert(root, matrix[i][j]);
-				}
-				c_zero = c_zero + (root->left->left->data) * pow(((root->data) - 1), (k - t));
-				c_one = c_one + (root->left->right->data) * pow(((root->data) - 1), (k - t));
-				deleteTreeWithRoot(&root);
-			}
-			
-		}
-		else{
-			c_zero = c_one = 0;
-			for (int i = 1; i < N + 1; i++) {
-				for (int j = 1; j < 2 * N; j++) {
-					root = insert(root, matrix[i][j]);
-				}
-				c_zero = c_zero + (root->right->left->data) * pow(((root->data) - 1), (k - t));
-				c_one = c_one + (root->right->right->data) * pow(((root->data) - 1), (k - t));
-				deleteTreeWithRoot(&root);
-			}
-		}
-
-	printf("print c0: %d\n", c_zero);
-	printf("print c1: %d\n", c_one);
-
-	//below step is not correct try to build another binary tree to store all values and finally find the path 
-	if (c_zero >= c_one) {
-		c_zero = c_one = 0;
-		for (int i = 1; i < N + 1; i++) {
-			for (int j = 1; j < 2 * N; j++) {
-				root = insert(root, matrix[i][j]);
-			}
-			c_zero = c_zero + (root->left->left->left->data) * pow(((root->data) - 1), (k - t));
-			c_one = c_one + (root->left->left->right->data) * pow(((root->data) - 1), (k - t));
-			deleteTreeWithRoot(&root);
-		}
-
-	}
-	else {
-		c_zero = c_one = 0;
-		for (int i = 1; i < N + 1; i++) {
-			for (int j = 1; j < 2 * N; j++) {
-				root = insert(root, matrix[i][j]);
-			}
-			c_zero = c_zero + (root->right->left->data) * pow(((root->data) - 1), (k - t));
-			c_one = c_one + (root->right->right->data) * pow(((root->data) - 1), (k - t));
-			deleteTreeWithRoot(&root);
-		}
-	}
-
-	printf("print c0: %d\n", c_zero);
-	printf("print c1: %d\n", c_one);
-
-	printf("print string w: \n");
-	//for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < 2 * N; j++) {
-			pathNode = insert(root, matrix[i][j]);
-			break;
-			if (c_zero >= c_one) {
-				pathNode = insert(root->left, matrix[i][j]);
-			}
-			else
-				pathNode = insert(root->right, matrix[i][j]);
-		}
-		levelOrder(pathNode);
-		//deleteTreeWithRoot(&root);
-	//}
-
-	*/
-	
-	
 }
- 
-
-/*
-//function to convert String data type to integer data type
-int* convertStringToInteger(char* c)
-{
-	int len = strlen(c);//c.length()
-	int i, j=0;
-	int* a = (int*)malloc(len * sizeof(int));
-	for (i = 0; i < len; i++)
-		if (c[i] == ",")
-			continue;
-		if (c[i] == " ") {
-			j++;
-			}
-		else {
-			a[i] = c[j] *10 +(c[i] - 48);
-		}
-	return a;
-}
-
-//fucntion to check if there is an edge between two vertices
-
-int hadEdge(int u, int v) {
-	for (u = 0; u < N; u++) {
-		for (v = 0; v < N; v++) {
-			if (adj_matrix[u][v] == 1) {
-				printf("There is an edge between u[%d] and v[%d]", u, v);
-				return true;
-			}
-			else {
-				printf("there is no edge between u[%d] and v[%d]", u, v);
-				return false;
-			}
-		}
-	}
-
-
-}
-
-//function to convert decimal number to binary number
-
-
-
-void decToBinary(int n)
-{
-	// array to store binary number
-	int binaryNum[32];
-
-	// counter for binary array
-	int i = 0;
-	while (n > 0) {
-		// storing remainder in binary array
-		binaryNum[i] = n % 2;
-		n = n / 2;
-		i++;
-	}
-
-	// printing binary array in reverse order
-	for (int j = i - 1; j >= 0; j--)
-		printf("%d", binaryNum[j]);
-}
-
-struct Node* insertLevelOrder(int arr[], int i, int n) {
-	struct Node* root = NULL;
-	if (i < n) {
-		root = newNode(arr[i]);
-		root->left = insertLevelOrder(arr, 2 * i + 1, n);
-		root->right = insertLevelOrder(arr, 2 * i + 2, n);
-
-	}
-	return root;
-}
-
-struct node* insertNeighborhood(struct Node* p, int n) {
-	while(n>1) {
-		if (p == NULL) {
-			return newNode(n);
-
-		}
-		for (int i = 1; i < N + 1; i++) {
-			for (int j = 1; j < n + 1; j++) {
-				if (adj_matrix[i][j] == 1 && j < (n / 2) + 1) {
-					p->left = insertNeighborhood(p->left, (n / 2));
-				}
-				else if (adj_matrix[i][j] == 1 && j > (n / 2) + 1) {
-					p->right = insertNeighborhood(p->right, n / 2);
-				}
-				return p;
-			}
-		}
-	}
-
-
-}
-
-struct Node *insert(struct Node *p, int key) {
-
-	if (p == NULL) {
-		return newNode(key);
-	}
-
-	if (key < p->data) {
-		p->left = insert(p->left, key);
-	}
-	else if (key > p->data) {
-		p->right = insert(p->right, key);
-	}
-	return p;
-}
-
-//post-order binary tree representation
-void postOrder(struct Node* Node) {
-	if (Node == NULL) {
-		return;
-	}
-	if (Node != NULL) {
-		postOrder(Node->left);
-		postOrder(Node->right);
-		printf("%d\n", Node->data);
-
-	}
-}
-
-
-//in-order binary tree representation
-void inOrder(struct Node* Node) {
-	if (Node == NULL) {
-		return;
-	}
-	if (Node != NULL) {
-		inOrder(Node->left);
-		printf("%d\n", Node->data);
-		inOrder(Node->right);
-	}
-
-}
-
-//main block
-
-		
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < N + 1; j++) {
-			if (adj_matrix[i][j] == 1) {
-				addEdge(graph, i, j);
-			}
-
-		}
-	}
-	
-	printf("load adjacency list for v:\n");
-	printGraph(graph);
-	printf("\n");
-	
-	int n = 17;
-	printf("decimal 17 to binary: ");
-	decToBinary(n);
-	printf("\n");
-
-	printf("converted array:\n");
-	convertStringToInteger(fpointer);
-	root = insert(root, 50);
-	insert(root, 30);
-	insert(root, 20);
-	insert(root, 40);
-	insert(root, 70);
-	insert(root, 60);
-	insert(root, 80);
-	printf("print inorder list for binary tree: \n");
-	inOrder(root);
-	printf("\n");
-
-*/
