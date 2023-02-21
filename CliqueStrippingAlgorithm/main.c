@@ -14,7 +14,7 @@ int adj_matrix_fix[N][N];
 int matrix[(2 * N) - 1][(2 * N) - 1];
 int u_[N];
 int v_[N];
-int num_edges = 0;
+int num_edges = 0; //final result of m_hat function
 int degree;
 int heightOfTree;
 float delta = 1;
@@ -70,7 +70,7 @@ int m_hat() {
 
 	for (int i = 1; i < N + 1; i++) {
 		for (int j = 1; j < N + 1; j++) {
-			num_edges = num_edges + adj_matrix_fix[i][j];
+			num_edges = num_edges + adj_matrix[i][j];
 		}
 	}
 	printf("%d", num_edges);
@@ -79,7 +79,7 @@ int m_hat() {
 }
 
 bool isBoolean() {
-	if (m_hat() >= pow(N, (2 - delta))) {
+	if (num_edges >= pow(N, (2 - delta))) {
 		return true;
 	}
 	else 
@@ -88,7 +88,7 @@ bool isBoolean() {
 }
 
 //function to calculate k
-int get_k() {
+int get_k(int numberOfEdges) {
 
 	float denominator = (2 * pow((double)N, 2)) / num_edges;
 	float numerator = delta * log2((double)N);
@@ -466,96 +466,105 @@ void printLastIndex() {
 }
 
 void runCliqueStrippingAlgorithm() {
-	int t = 1;
+	//int t = 1;
 	int size = 0;
 	int count = 0;
 	int last_index = 0;
 	int arr[1000] = { 0 };
 	int finalArrayIndex[1000] = { 0 };
-	
-	while (isBoolean && t < k ) {
-		c_zero = c_one = 0;
-		int j = 1;
-		size = 0;
+	while (num_edges >= pow(N, (2 - delta))) {
+		int t = 1; 
 
-		while (j < N) {
-			for (int i = 1; i < N + 1; i++) {
-				c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
-				c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
-			}
-			printf("print c0: %d\n", c_zero);
-			printf("print c1: %d\n", c_one);
+		while (t <= k && k > 0) {
+			c_zero = c_one = 0;
+			int j = 1;
+			size = 0;
 
-			if (c_zero >= c_one) {
-				c_zero = c_one = 0;
-				j = 2 * j;
-				arr[size] = j;
-			}
-			else {
-				c_zero = c_one = 0;
-				j = (2 * j) + 1;
-				arr[size] = j;
-			}
-			size++;
-		}
-		last_index = arr[size - 1];
-		printf("last index: %d", last_index);
-		printf("\n");
-		for (int i = 0; i < size; i++) {
-			arr[i] = 0;
-		}
-		for (int i = 0; i < size; i++) {
-			printf("%d", arr[i]);
-		}
-		printf("\n");
-
-		int l = 0;
-		printf("\n");
-		for (int i = 1; i < N + 1; i++) {
-			l = last_index - (N - 1);
-			adj_matrix[i][l] = 0;
-		}
-		createMatrix();
-
-		for (int i = 1; i < N + 1; i++) {
-			l = last_index - (N - 1);
-			finalArrayIndex[count] = l;
-		}
-		count++;
-		struct Graph* bipartite = createGraph();
-		for (int j = 0; j < count; j++) {
-			for (int i = 1; i < N + 1; i++) {
-				if (adj_matrix_fix[finalArrayIndex[j]][i] = 1) {
-					addEdge(bipartite, finalArrayIndex[j], i);
+			while (j < N) {
+				for (int i = 1; i < N + 1; i++) {
+					c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
+					c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 				}
+				printf("print c0: %d\n", c_zero);
+				printf("print c1: %d\n", c_one);
 
-			}
-		}
-
-		printf("load adjacency list for bipartite graph :\n");
-		printGraph(bipartite);
-		printf("\n");
-		printf("print final array index: ");
-		for (int i = 0; i < count; i++) {
-			printf("%d ", finalArrayIndex[i]);
-		}
-
-		printf("\n");
-
-		struct Graph* bipartiteClique = createGraph();
-		for (int j = 0; j < count; j++) {
-			for (int i = 1; i < N + 1; i++) {
-				if (adj_matrix_fix[finalArrayIndex[j]][i] = 1) {
-					addEdge(bipartiteClique, finalArrayIndex[j], i);
+				if (c_zero >= c_one) {
+					c_zero = c_one = 0;
+					j = 2 * j;
+					arr[size] = j;
 				}
-
+				else {
+					c_zero = c_one = 0;
+					j = (2 * j) + 1;
+					arr[size] = j;
+				}
+				size++;
 			}
-		}
+			last_index = arr[size - 1];
+			printf("last index: %d", last_index);
+			printf("\n");
+			for (int i = 0; i < size; i++) {
+				arr[i] = 0;
+			}
+			for (int i = 0; i < size; i++) {
+				printf("%d", arr[i]);
+			}
+			printf("\n");
 
+			int l = 0;
+			int counter = 0;
+			printf("\n");
+			for (int i = 1; i < N + 1; i++) {
+				l = last_index - (N - 1);
+				if (adj_matrix[i][l] != 0) {
+					adj_matrix[i][l] = 0;
+					counter++;
+				}
+				
+			}
+			//printf("print counter %d", counter);
+			num_edges -= counter;
+			printf("\n");
+			printf("print updated number of edges %d", num_edges);
+			printf("\n");
+			createMatrix();
+
+			for (int i = 1; i < N + 1; i++) {
+				l = last_index - (N - 1);
+				finalArrayIndex[count] = l;
+			}
+			count++;
+			struct Graph* bipartite = createGraph();
+			for (int j = 0; j < count; j++) {
+				for (int i = 1; i < N + 1; i++) {
+					if (adj_matrix_fix[finalArrayIndex[j]][i] = 1) {
+						addEdge(bipartite, finalArrayIndex[j], i);
+					}
+				}
+			}
+
+			printf("load adjacency list for bipartite graph :\n");
+			printGraph(bipartite);
+			printf("\n");
+			printf("print final array index: ");
+			for (int i = 0; i < count; i++) {
+				printf("%d ", finalArrayIndex[i]);
+			}
+
+			printf("\n");
+
+			struct Graph* bipartiteClique = createGraph();
+			for (int j = 0; j < count; j++) {
+				for (int i = 1; i < N + 1; i++) {
+					if (adj_matrix_fix[finalArrayIndex[j]][i] = 1) {
+						addEdge(bipartiteClique, finalArrayIndex[j], i);
+					}
+				}
+			}				
+			k = get_k(num_edges);
+		}
 		t++;
 	}
-		
-	
 }
 
 
@@ -600,7 +609,7 @@ int main() {
 	printf("\n");
 
 	printf("value of k is: \n");
-	get_k();
+	get_k(num_edges);
 	printf("\n");
 
 	logFunction();
