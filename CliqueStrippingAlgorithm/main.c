@@ -472,10 +472,10 @@ void runCliqueStrippingAlgorithm() {
 	int last_index = 0;
 	int arr[1000] = { 0 };
 	int finalArrayIndex[1000] = { 0 };
-	while (num_edges >= pow(N, (2 - delta))) {
+	while (k> 0 && num_edges >= pow(N, (2 - delta))) {
 		int t = 1; 
 
-		while (t <= k && k > 0) {
+		while (t <= k) {
 			c_zero = c_one = 0;
 			int j = 1;
 			size = 0;
@@ -553,14 +553,15 @@ void runCliqueStrippingAlgorithm() {
 
 			printf("\n");
 
-			struct Graph* bipartiteClique = createGraph();
+			/*struct Graph* bipartiteClique = createGraph();
 			for (int j = 0; j < count; j++) {
 				for (int i = 1; i < N + 1; i++) {
 					if (adj_matrix_fix[finalArrayIndex[j]][i] = 1) {
 						addEdge(bipartiteClique, finalArrayIndex[j], i);
 					}
 				}
-			}				
+			}
+			*/
 			k = get_k(num_edges);
 		}
 		t++;
