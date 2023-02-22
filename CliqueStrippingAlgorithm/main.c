@@ -5,6 +5,7 @@
 #include <string.h>
 #include<stdbool.h>
 #include<math.h>
+#include<time.h>
 #define MAXCHAR 100000
 #define N 8
 
@@ -90,9 +91,9 @@ bool isBoolean() {
 //function to calculate k
 int get_k(int numberOfEdges) {
 
-	float denominator = (2 * pow((double)N, 2)) / num_edges;
-	float numerator = delta * log2((double)N);
-	k = floor((double)numerator / (log2((double)denominator)));
+	double denominator = (2 * pow((double)N, 2)) / num_edges;
+	double numerator = delta * log2((double)N);
+	k = floor(numerator / (log2(denominator)));
 	printf("%d",k);
 	return k;
 }
@@ -475,7 +476,7 @@ void runCliqueStrippingAlgorithm() {
 	while (k> 0 && num_edges >= pow(N, (2 - delta))) {
 		int t = 1; 
 
-		while (t <= k) {
+		while ( t <= k) {
 			c_zero = c_one = 0;
 			int j = 1;
 			size = 0;
@@ -537,7 +538,7 @@ void runCliqueStrippingAlgorithm() {
 			struct Graph* bipartite = createGraph();
 			for (int j = 0; j < count; j++) {
 				for (int i = 1; i < N + 1; i++) {
-					if (adj_matrix_fix[finalArrayIndex[j]][i] = 1) {
+					if (adj_matrix_fix[i][finalArrayIndex[j]] != 0) {
 						addEdge(bipartite, finalArrayIndex[j], i);
 					}
 				}
@@ -553,15 +554,6 @@ void runCliqueStrippingAlgorithm() {
 
 			printf("\n");
 
-			/*struct Graph* bipartiteClique = createGraph();
-			for (int j = 0; j < count; j++) {
-				for (int i = 1; i < N + 1; i++) {
-					if (adj_matrix_fix[finalArrayIndex[j]][i] = 1) {
-						addEdge(bipartiteClique, finalArrayIndex[j], i);
-					}
-				}
-			}
-			*/
 			k = get_k(num_edges);
 		}
 		t++;
@@ -573,7 +565,7 @@ void runCliqueStrippingAlgorithm() {
 
 int main() {
 
-
+	clock_t start = clock();
 	struct Graph* graph = createGraph();
 
 	printf("load adjacency matrix:\n");
@@ -657,10 +649,9 @@ int main() {
 		printf("result is false");
 
 	printf("\n");
-
-
-
-
+	clock_t stop = clock();
+	double elapsed_time = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
+	printf("Time elapsed for original clique partitioning algorithm in ms: %f", elapsed_time);
 
 
 	return 0;
