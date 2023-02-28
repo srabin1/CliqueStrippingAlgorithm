@@ -1,13 +1,13 @@
 #pragma warning(disable:4996)
 #include<stdio.h>
 #include<stdlib.h>
-#include <conio.h>
 #include <string.h>
 #include<stdbool.h>
 #include<math.h>
 #include<time.h>
 #define MAXCHAR 100000
 #define N 8
+
 
 
 int adj_matrix[N][N];
@@ -56,9 +56,9 @@ void load_adj_matrix() {
 		}
 		fclose(fpointer);
 	}
-
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < N + 1; j++) {
+	int i, j;
+	for (i = 1; i < N + 1; i++) {
+		for (j = 1; j < N + 1; j++) {
 			printf(" %d ", adj_matrix[i][j]);
 		}
 		printf("\n");
@@ -68,9 +68,9 @@ void load_adj_matrix() {
 
 //function to count number of edge in graph G
 int m_hat() {
-
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < N + 1; j++) {
+	int i, j;
+	for (i = 1; i < N + 1; i++) {
+		for (j = 1; j < N + 1; j++) {
 			num_edges = num_edges + adj_matrix[i][j];
 		}
 	}
@@ -100,10 +100,10 @@ int get_k(int numberOfEdges) {
 
 //function to calculate degree of each vertex in part U
 void getDegreeOfU() {
-
-	for (int i = 1; i < N + 1; i++) {
+	int i, j;
+	for (i = 1; i < N + 1; i++) {
 		degree = 0;
-		for (int j = 1; j < N + 1; j++) {
+		for (j = 1; j < N + 1; j++) {
 			degree = degree + adj_matrix[i][j];
 		}
 		printf("degree of u[%d] is: %d\n", i, degree);
@@ -112,10 +112,10 @@ void getDegreeOfU() {
 }
 
 void getDegreeOfV() {
-
-	for (int j = 1; j < N + 1; j++) {
+	int j, i;
+	for (j = 1; j < N + 1; j++) {
 		degree = 0;
-		for (int i = 1; i < N + 1; i++) {
+		for (i = 1; i < N + 1; i++) {
 			degree = degree + adj_matrix[i][j];
 		}
 		printf("degree of v[%d] is: %d\n", j, degree);
@@ -181,26 +181,23 @@ void addEdge(struct Graph* graph, int s, int d) {
 /**********************************************************************/
 //function to create matrix contains all neighborhood trees' list (level order)
 void createMatrix() {
-	for (int i = 1; i < N+1; i++) {
-		for (int j = (2*N)-1 ; j > 0; j--) {
+	int i, j;
+	for (i = 1; i < N+1; i++) {
+		for (j = (2*N)-1 ; j > 0; j--) {
 			if (j < N+1) {
 				matrix[i][j+ (N-1)] = adj_matrix[i][j];
 			}
 		}
 	}
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = N-1; j > 0; j--) {
+	for (i = 1; i < N + 1; i++) {
+		for (j = N-1; j > 0; j--) {
 			matrix[i][j] = matrix[i][2 * j] + matrix[i][(2 * j) + 1];
 		}
 	}
 
-	/*for (int i = 1; i < N + 1; i++) {
-		matrix[i][14] = 0;
-		}
-		*/
 
-	for (int i = 1; i < N+1; i++) {
-		for (int j = 1; j < 2 * N; j++) {
+	for (i = 1; i < N+1; i++) {
+		for (j = 1; j < 2 * N; j++) {
 			printf("%d ", matrix[i][j]);
 		}
 		printf("\n");
@@ -325,8 +322,9 @@ void levelOrder(struct Node* root) {
 
 //function to print all neighborhood tree in level order
 void printLevelOrder() {
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < 2 * N; j++) {
+	int i, j;
+	for (i = 1; i < N + 1; i++) {
+		for (j = 1; j < 2 * N; j++) {
 			root = insert(root, matrix[i][j]);
 		}
 		levelOrder(root); 
@@ -338,10 +336,11 @@ void printLevelOrder() {
 /********************************Clique Stripping Algorithm**********************/
 //function to find c0 and c1
 void find_czero_cone() {
+	int i;
 	int t = 1; int j = 1;
 	int count = 0;
 	while (j < N) {
-		for (int i = 1; i < N + 1; i++) {
+		for (i = 1; i < N + 1; i++) {
 			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
 			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 		}
@@ -364,8 +363,9 @@ void find_czero_cone() {
 //function to find the selected path and corresponding string w
 void printSelectedString() {
 	int t = 1; int j = 1;
+	int i;
 	while (j < N) {
-		for (int i = 1; i < N + 1; i++) {
+		for (i = 1; i < N + 1; i++) {
 			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
 			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 		}
@@ -386,14 +386,14 @@ void printSelectedString() {
 //function to print all c0 and c1 in all levels
 void printAll_czero_cone() {
 	int t = 1; int j = 1;
-
+	int i;
 	while (j < N) {
 		if (newRoot == NULL) {
 			newRoot = insert(newRoot, N);
 		}
 		else {
 
-			for (int i = 1; i < N + 1; i++) {
+			for (i = 1; i < N + 1; i++) {
 				c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
 				c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 			}
@@ -408,10 +408,11 @@ void printAll_czero_cone() {
 
 void printSelectedIndices() {
 	int t = 1; int j = 1;
+	int i;
 	int size = 0;
 	int arr[1000];
 	while (j < N) {
-		for (int i = 1; i < N + 1; i++) {
+		for (i = 1; i < N + 1; i++) {
 			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
 			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 		}
@@ -428,7 +429,7 @@ void printSelectedIndices() {
 		}
 		size++;
 	}
-	for (int i = 0; i < size; i++) {
+	for (i = 0; i < size; i++) {
 		printf("%d ", arr[i]);
 	}
 }
@@ -436,11 +437,12 @@ void printSelectedIndices() {
 
 void printLastIndex() {
 	int t = 1; int j = 1;
+	int i;
 	int size = 0;
 	int last_index = 0;
 	int arr[1000];
 	while (j < N) {
-		for (int i = 1; i < N + 1; i++) {
+		for (i = 1; i < N + 1; i++) {
 			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
 			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 		}
@@ -457,7 +459,7 @@ void printLastIndex() {
 		}
 		size++;
 	}
-	for (int i = 0; i < size; i++) {
+	for (i = 0; i < size; i++) {
 		if (i = size - 1) {
 			last_index = arr[i];
 		}
@@ -468,6 +470,7 @@ void printLastIndex() {
 
 void runCliqueStrippingAlgorithm() {
 	//int t = 1;
+	int i;
 	int size = 0;
 	int count = 0;
 	int last_index = 0;
@@ -482,7 +485,7 @@ void runCliqueStrippingAlgorithm() {
 			size = 0;
 
 			while (j < N) {
-				for (int i = 1; i < N + 1; i++) {
+				for (i = 1; i < N + 1; i++) {
 					c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
 					c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 				}
@@ -504,10 +507,10 @@ void runCliqueStrippingAlgorithm() {
 			last_index = arr[size - 1];
 			printf("last index: %d", last_index);
 			printf("\n");
-			for (int i = 0; i < size; i++) {
+			for (i = 0; i < size; i++) {
 				arr[i] = 0;
 			}
-			for (int i = 0; i < size; i++) {
+			for (i = 0; i < size; i++) {
 				printf("%d", arr[i]);
 			}
 			printf("\n");
@@ -515,7 +518,7 @@ void runCliqueStrippingAlgorithm() {
 			int l = 0;
 			int counter = 0;
 			printf("\n");
-			for (int i = 1; i < N + 1; i++) {
+			for (i = 1; i < N + 1; i++) {
 				l = last_index - (N - 1);
 				if (adj_matrix[i][l] != 0) {
 					adj_matrix[i][l] = 0;
@@ -530,14 +533,14 @@ void runCliqueStrippingAlgorithm() {
 			printf("\n");
 			createMatrix();
 
-			for (int i = 1; i < N + 1; i++) {
+			for (i = 1; i < N + 1; i++) {
 				l = last_index - (N - 1);
 				finalArrayIndex[count] = l;
 			}
 			count++;
 			struct Graph* bipartite = createGraph();
-			for (int j = 0; j < count; j++) {
-				for (int i = 1; i < N + 1; i++) {
+			for (j = 0; j < count; j++) {
+				for (i = 1; i < N + 1; i++) {
 					if (adj_matrix_fix[i][finalArrayIndex[j]] != 0) {
 						addEdge(bipartite, finalArrayIndex[j], i);
 					}
@@ -548,7 +551,7 @@ void runCliqueStrippingAlgorithm() {
 			printGraph(bipartite);
 			printf("\n");
 			printf("print final array index: ");
-			for (int i = 0; i < count; i++) {
+			for (i = 0; i < count; i++) {
 				printf("%d ", finalArrayIndex[i]);
 			}
 
@@ -570,9 +573,9 @@ int main() {
 
 	printf("load adjacency matrix:\n");
 	load_adj_matrix();
-
-	for (int i = 1; i < N + 1; i++) {
-		for (int j = 1; j < N + 1; j++) {
+	int i, j;
+	for (i = 1; i < N + 1; i++) {
+		for (j = 1; j < N + 1; j++) {
 			if (adj_matrix[j][i] == 1) {
 				addEdge(graph, i, j);
 			}
