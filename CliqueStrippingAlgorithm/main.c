@@ -7,7 +7,7 @@
 #include<time.h>
 #define MAXCHAR 100000
 #define N 8
-
+FILE* k_hat_file_ptr;
 
 
 int adj_matrix[N][N];
@@ -22,19 +22,23 @@ float delta = 1;
 int k;
 int c_zero = 0;
 int c_one = 0;
-
+int start = 0;
+int U[2 * N][N + 1];
+int K[2 * N][N + 1];
+int	q = 0;// this is clique number
+int m_hat_fix = 0;
 
 //function to calculate the height of a binary tree
 int logFunction() {
 	heightOfTree = log2(N);
 	printf("log2 of N is: %d", heightOfTree);
 	return heightOfTree;
-	
+
 }
 
 //function to load adjacency matrix from csv file and print it
 void load_adj_matrix() {
-	FILE* fpointer = fopen("Bipartite-graph1.csv", "r");
+	FILE* fpointer = fopen("Bipartite-graph2.csv", "r");
 	char line[MAXCHAR];
 	if (!fpointer)
 		printf("Cann't open the file\n");
@@ -74,6 +78,7 @@ int m_hat() {
 			num_edges = num_edges + adj_matrix[i][j];
 		}
 	}
+	m_hat_fix = num_edges;
 	printf("%d", num_edges);
 	return num_edges;
 
@@ -83,7 +88,7 @@ bool isBoolean() {
 	if (num_edges >= pow(N, (2 - delta))) {
 		return true;
 	}
-	else 
+	else
 		return false;
 
 }
@@ -94,7 +99,7 @@ int get_k(int numberOfEdges) {
 	double denominator = (2 * pow((double)N, 2)) / num_edges;
 	double numerator = delta * log2((double)N);
 	k = floor(numerator / (log2(denominator)));
-	printf("%d",k);
+	printf("%d", k);
 	return k;
 }
 
@@ -182,21 +187,21 @@ void addEdge(struct Graph* graph, int s, int d) {
 //function to create matrix contains all neighborhood trees' list (level order)
 void createMatrix() {
 	int i, j;
-	for (i = 1; i < N+1; i++) {
-		for (j = (2*N)-1 ; j > 0; j--) {
-			if (j < N+1) {
-				matrix[i][j+ (N-1)] = adj_matrix[i][j];
+	for (i = 1; i < N + 1; i++) {
+		for (j = (2 * N) - 1; j > 0; j--) {
+			if (j < N + 1) {
+				matrix[i][j + (N - 1)] = adj_matrix[i][j];
 			}
 		}
 	}
 	for (i = 1; i < N + 1; i++) {
-		for (j = N-1; j > 0; j--) {
+		for (j = N - 1; j > 0; j--) {
 			matrix[i][j] = matrix[i][2 * j] + matrix[i][(2 * j) + 1];
 		}
 	}
 
 
-	for (i = 1; i < N+1; i++) {
+	for (i = 1; i < N + 1; i++) {
 		for (j = 1; j < 2 * N; j++) {
 			printf("%d ", matrix[i][j]);
 		}
@@ -211,14 +216,14 @@ struct Node {
 	struct Node* right;
 	int rcount;
 	int lcount;
-}*root =NULL, *newRoot= NULL;
+}*root = NULL, * newRoot = NULL;
 
 //function to create a new node
 struct Node* newNode(int data) {
 	struct Node* t = (struct Node*)malloc(sizeof(struct Node));
 	t->data = data;
 	t->left = t->right = NULL;
-	t -> rcount = t->lcount = 0;
+	t->rcount = t->lcount = 0;
 	return t;
 }
 
@@ -254,12 +259,12 @@ bool isBinaryTreeComplete(int count) {
 }
 
 //function to insert new node according to the complete binary tree representation
-struct Node *insert(struct Node *root, int data) {
-	
+struct Node* insert(struct Node* root, int data) {
+
 	if (root == NULL) {
 		return newNode(data);
 	}
-	
+
 	if (root->rcount == root->lcount) {
 		root->left = insert(root->left, data);
 		root->lcount += 1;
@@ -327,7 +332,7 @@ void printLevelOrder() {
 		for (j = 1; j < 2 * N; j++) {
 			root = insert(root, matrix[i][j]);
 		}
-		levelOrder(root); 
+		levelOrder(root);
 		deleteTreeWithRoot(&root);
 	}
 }
@@ -416,7 +421,7 @@ void printSelectedIndices() {
 			c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
 			c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
 		}
-		
+
 		if (c_zero >= c_one) {
 			c_zero = c_one = 0;
 			j = 2 * j;
@@ -470,24 +475,25 @@ void printLastIndex() {
 
 void runCliqueStrippingAlgorithm() {
 	//int t = 1;
-	int i;
+	int i, j;
 	int size = 0;
 	int count = 0;
 	int last_index = 0;
-	int arr[1000] = { 0 };
-	int finalArrayIndex[1000] = { 0 };
-	while (k> 0 && num_edges >= pow(N, (2 - delta))) {
-		int t = 1; 
+	int arr[2000] = { 0 };
+	int finalArrayIndex[2000] = { 0 };
+	while (k > 1 && num_edges >= pow(N, (2 - delta))) {
+		int t = 1;
 
-		while ( t <= k) {
+		while (t <= k) {
 			c_zero = c_one = 0;
-			int j = 1;
+			j = 1;
 			size = 0;
 
 			while (j < N) {
 				for (i = 1; i < N + 1; i++) {
-					c_zero = c_zero + (matrix[i][2 * j]) * pow((matrix[i][1] - 1), (k - t));
-					c_one = c_one + (matrix[i][(2 * j) + 1]) * pow((matrix[i][1] - 1), (k - t));
+					long long int temp = pow((matrix[i][1] - 1), (k - t));
+					c_zero = c_zero + (matrix[i][2 * j]) * temp;// pow((matrix[i][1] - 1), (k - t));
+					c_one = c_one + (matrix[i][(2 * j) + 1]) * temp; // pow((matrix[i][1] - 1), (k - t));
 				}
 				printf("print c0: %d\n", c_zero);
 				printf("print c1: %d\n", c_one);
@@ -524,7 +530,7 @@ void runCliqueStrippingAlgorithm() {
 					adj_matrix[i][l] = 0;
 					counter++;
 				}
-				
+
 			}
 			//printf("print counter %d", counter);
 			num_edges -= counter;
@@ -536,7 +542,9 @@ void runCliqueStrippingAlgorithm() {
 			for (i = 1; i < N + 1; i++) {
 				l = last_index - (N - 1);
 				finalArrayIndex[count] = l;
+				//K[q][count] = l;
 			}
+
 			count++;
 			struct Graph* bipartite = createGraph();
 			for (j = 0; j < count; j++) {
@@ -556,18 +564,80 @@ void runCliqueStrippingAlgorithm() {
 			}
 
 			printf("\n");
+			t++;
 
-			k = get_k(num_edges);
+			//printf("print k-hat %d", k);
 		}
-		t++;
+		int p = 0;
+		printf("K:");
+		for (j = start; j < count; j++) {
+			K[q][j - start] = finalArrayIndex[j];
+			printf(" %d", K[q][j - start]);
+		}
+		K[q][count] = -1;
+		printf("\n");
+
+
+		for (i = 1; i < N + 1; i++) {
+			int temp = 0;
+			for (j = start; j < count; j++) {
+				if (adj_matrix_fix[i][finalArrayIndex[j]] == 1) {
+					temp++;
+				}
+
+			}
+			if (temp == count - start) {
+				U[q][p] = i;
+				p++;
+			}
+
+		}
+		U[q][p] = -1;
+		printf("U: ");
+		for (p = 0; p < N + 1; p++) {
+			printf("%d ", U[q][p]);
+		}
+		printf("\n");
+
+		printf("k is: ");
+		k = get_k(num_edges);
+		printf("\n");
+		printf("Edges: %d", num_edges);
+		q++;
+		start = count;
+
+
 	}
 }
 
 
-
+void get_remaining_edges() {
+	int p, j, i;
+	int edges = 0;
+	int edge_in_clique = 0;
+	int total_edges = 0;
+	for (p = 0; p < q; p++) {
+		j = 0;
+		while (K[p][j] > 0) {
+			i = 0;
+			while (U[p][i] > 0) {
+				edges++;
+				i++;
+			}
+			j++;
+		}
+		edge_in_clique += (i)+(j);
+	}
+	int trivial = m_hat_fix - edges;
+	printf("\nTrivial: %d \n", trivial);
+	printf("\nedge_in_clique: %d \n", edge_in_clique);
+	total_edges = trivial + edge_in_clique;
+	float compression_ratio = (float)m_hat_fix / (float)total_edges;
+	printf("\ncompression_ratio: %f \n", compression_ratio);
+}
 
 int main() {
-
+	k_hat_file_ptr = fopen("k_values.csv", "w");
 	clock_t start = clock();
 	struct Graph* graph = createGraph();
 
@@ -594,7 +664,7 @@ int main() {
 	m_hat();
 	printf("\n");
 
-	
+
 
 	printf("get degree of u:\n");
 	getDegreeOfU();
@@ -606,6 +676,11 @@ int main() {
 
 	printf("value of k is: \n");
 	get_k(num_edges);
+	printf("\n");
+
+	printf("value of k is: \n");
+	get_k(num_edges);
+	fprintf(k_hat_file_ptr, "%d\n", k);
 	printf("\n");
 
 	logFunction();
@@ -643,19 +718,19 @@ int main() {
 	runCliqueStrippingAlgorithm();
 	printf("\n");
 
-	
-	printf("check out boolean function:\n");
+
+	/*printf("check out boolean function:\n");
 	if (isBoolean()) {
 		printf("the result is true");
 	}
 	else
 		printf("result is false");
 
-	printf("\n");
+	printf("\n");*/
 	clock_t stop = clock();
 	double elapsed_time = (double)(stop - start) * 1000.0 / CLOCKS_PER_SEC;
 	printf("Time elapsed for original clique partitioning algorithm in ms: %f", elapsed_time);
-
-
+	fclose(k_hat_file_ptr);
+	get_remaining_edges();
 	return 0;
 }
